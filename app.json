@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "LumaRaf",
+    "slug": "lumaraf",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0f0c0b",
+    "splash": {
+      "backgroundColor": "#0f0c0b"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "extra": {
+      "lumaRafBuild": "LUMARAF-0.1.0-ILK-ODALAR"
+    },
+    "plugins": [
+      "expo-audio",
+      "expo-status-bar"
+    ]
+  }
+}

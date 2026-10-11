@@ -1,0 +1,1757 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f0c0b">
+<title>LumaRaf</title>
+<style>/* LumaRaf · "Lamba Işığı" teması. Token adları LumaNote ile aynıdır (SPEC 3.3). */
+:root{
+  --bg:#0f0c0b; --surface:#1b1513; --surface2:#251c18; --text:#f5ece1; --muted:#b7a796; --quiet:#7e6f63;
+  --accent:#f2b766; --accent2:#c8643c; --line:rgba(242,183,102,.14); --glass:rgba(27,21,19,.86);
+  --gold:#e8c27a; --mint:#93b48b; --danger:#ed92a2; --nav:rgba(18,13,11,.96);
+  --radius:22px; --safe-top:0px; --safe-bottom:0px;
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --book:Georgia,"Times New Roman",serif;
+  color-scheme:dark;
+}
+body[data-room="tv"]{ --bg:#08141a; --surface:#0f2026; --surface2:#132a31; --muted:#a3b8b4; --quiet:#6d8582; --accent:#e9a85a; --line:rgba(120,190,190,.16); --glass:rgba(13,30,36,.88); --nav:rgba(8,20,26,.96); }
+body[data-room="balcony"]{ --bg:#0d0f1a; --surface:#171a29; --surface2:#1e2234; --muted:#a9acc0; --quiet:#6f7390; --line:rgba(170,180,230,.14); --nav:rgba(12,13,22,.96); }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--ui);font-size:15px;overscroll-behavior:none;transition:background .35s}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+input{font:inherit;color:inherit}
+#app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;position:relative}
+.ic{display:block;flex:0 0 auto}
+
+/* Üst satır */
+.top{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--safe-top) + 10px) 16px 6px;flex:0 0 auto}
+.logo{font-family:var(--book);font-size:28px;letter-spacing:-.02em;line-height:1}
+.logo small{display:block;font-family:var(--ui);font-size:8.5px;letter-spacing:.42em;color:var(--muted);margin-top:4px;padding-left:2px}
+.top-r{display:flex;align-items:center;gap:10px}
+.coin{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:7px 13px;font-size:14px;font-variant-numeric:tabular-nums;position:relative}
+.coin.bump{animation:bump .5s ease}
+@keyframes bump{40%{transform:scale(1.12)}}
+.coin-dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:inset -2px -2px 0 #b98c3d,inset 1px 1px 0 #f7dfa6;flex:0 0 auto;vertical-align:-2px}
+.coin-dot.big{width:30px;height:30px;box-shadow:inset -4px -4px 0 #b98c3d,inset 2px 2px 0 #f7dfa6}
+.coin-float{position:absolute;right:8px;top:-4px;color:var(--gold);font-weight:700;animation:float 1.4s ease forwards;pointer-events:none}
+@keyframes float{to{transform:translateY(-26px);opacity:0}}
+.pet{width:46px;height:32px;display:flex;align-items:center;justify-content:center}
+.pet canvas{width:44px;image-rendering:pixelated}
+.icon-btn{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text)}
+
+/* Görünüm */
+.view{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 16px calc(var(--safe-bottom) + 96px);-webkit-overflow-scrolling:touch}
+.eyebrow{font-size:10px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin:12px 2px 2px}
+.eyebrow.small{margin:0 0 4px;font-size:9px}
+.title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px}
+h1{font-family:var(--book);font-weight:400;font-size:34px;line-height:1.05;margin:2px 0 0;letter-spacing:-.01em}
+h2.sec{font-family:var(--book);font-weight:400;font-size:22px;margin:24px 2px 10px}
+h2.sec small{font-family:var(--ui);font-size:13px;color:var(--muted);margin-left:6px}
+.serif{font-family:var(--book)}
+.serif.lg{font-size:20px}.serif.xl{font-size:34px;line-height:1.1;font-weight:400;margin:6px 0 14px}
+.serif.xl em{color:var(--accent)}
+.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.muted.pad{padding:4px 4px 8px}
+.small{font-size:11px}
+.center{text-align:center}
+.grow{flex:1;min-width:0;text-align:left}
+.plain{display:block}
+.pill{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:24px;padding:9px 15px;font-size:14px;color:var(--text);white-space:nowrap;margin-bottom:4px}
+
+/* Sahne */
+.scene-card{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:#120d0b;position:relative;box-shadow:0 18px 50px #0007}
+#scene{display:block;width:100%;aspect-ratio:160/200;image-rendering:pixelated;touch-action:manipulation}
+.scene-card.editing{border-color:var(--accent)}
+.edit-banner{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;align-items:center;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:16px;padding:9px 9px 9px 14px;font-size:13px}
+.edit-banner button{background:var(--accent);color:#24170d;border-radius:14px;padding:6px 13px;font-weight:600}
+.tools{display:flex;justify-content:space-around;padding:12px 4px 4px}
+.tools button{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:var(--muted);padding:4px 8px;border-radius:14px}
+.tools button.on{color:var(--accent)}
+.room-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 6px}
+.room-tabs button{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:11px 4px;font-size:13px;color:var(--muted)}
+.room-tabs button.on{background:color-mix(in srgb,var(--accent) 16%,var(--surface));color:var(--text);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+
+/* Kartlar */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 15px;margin:10px 0}
+.card.hint{padding:18px}
+.card.hint .serif{font-size:19px;margin-bottom:4px}
+.card.hint .btn{margin-top:10px}
+.row-card{display:flex;align-items:center;gap:12px;cursor:pointer}
+.row-card .serif{font-size:17px;margin:1px 0}
+.round-ic{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.mini-spine{width:12px;height:42px;border-radius:2px;flex:0 0 auto;box-shadow:inset -3px 0 0 #0004,inset 0 2px 0 #fff3}
+.mini-tape{width:16px;height:42px;border-radius:2px;flex:0 0 auto;box-shadow:inset 0 0 0 2px #0003;background-image:linear-gradient(transparent 22%,#fffc 22%,#fffc 78%,transparent 78%)!important;background-size:10px 100%!important;background-repeat:no-repeat!important;background-position:center!important}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:11px 12px;cursor:pointer}
+.stat b{display:block;font-family:var(--book);font-weight:400;font-size:26px;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted)}
+.balance{display:flex;align-items:center;gap:14px}
+.balance b{font-size:20px;font-family:var(--book);font-weight:400}
+
+/* Düğmeler */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--accent);color:#24170d;border-radius:22px;padding:11px 18px;font-weight:600;font-size:15px}
+.btn.sm{padding:7px 13px;font-size:13px}
+.btn.wide{display:flex;width:100%;padding:14px}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.btn.text{background:transparent;color:var(--muted);font-weight:400}
+.btn.danger{background:var(--danger);color:#2a1016}
+.btn[disabled]{opacity:.5;cursor:default}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:3px}
+.seg.full{display:flex;width:100%}
+.seg button{flex:1;padding:8px 14px;border-radius:13px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:#24170d;font-weight:600}
+.seg.kind{margin-bottom:12px}
+.seg-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 12px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;margin:6px -16px 12px;padding:0 16px;scrollbar-width:none}
+.chips.scroll::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);border-radius:14px;padding:6px 11px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.chip.on{background:var(--accent);color:#24170d;border-color:var(--accent);font-weight:600}
+.tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:9px;background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--mint);margin-top:4px}
+
+/* Büyük raf (R-KIT) */
+.bigshelf{background:#3a2014;border:3px solid #24130b;border-radius:10px;padding:10px 7px 0;box-shadow:inset 0 0 0 1px #6b3a2255,0 14px 40px #0006}
+.shelf-row{display:flex;align-items:flex-end;gap:2px;min-height:132px;padding:0 3px;border-bottom:10px solid #6b3a22;box-shadow:inset 0 -2px 0 #24130b,0 1px 0 #8a5a3a;margin-bottom:10px;background:linear-gradient(#1a0c06,#26130b)}
+.spine{position:relative;background:var(--c);border-radius:2px 2px 0 0;box-shadow:inset -3px 0 0 #0005,inset 2px 0 0 #fff2,inset 0 3px 0 #fff3;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;transition:transform .2s}
+.spine:active{transform:translateY(-6px)}
+.spine .st{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--book);font-size:10.5px;color:#fff;opacity:.9;max-height:86%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-shadow:0 1px 0 #0006}
+.spine .band{position:absolute;left:0;right:0;height:3px}
+.spine .band.b1{top:16%;background:#0004}
+.spine .band.b2{top:16%;background:#0004;box-shadow:0 70px 0 #fff4}
+.spine.glow,.tapeset.glow{animation:glow 1.2s ease 3}
+@keyframes glow{50%{box-shadow:0 0 0 3px var(--accent),0 0 18px var(--accent)}}
+.list{display:flex;flex-direction:column;gap:6px}
+.list-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;text-align:left;width:100%}
+.list-row b{display:block;font-weight:400;font-size:16px}
+.list-row small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+.tbr{display:flex;flex-direction:column;gap:4px}
+.tbr-row{display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--line)}
+.tbr-row b{display:block;font-weight:400;font-size:15px}.tbr-row small{color:var(--muted);font-size:12px}
+.tbr-book{display:block;height:14px;max-width:70px;min-width:44px;background:var(--c);border-radius:2px;box-shadow:inset 0 2px 0 #fff3,inset 0 -2px 0 #0004,inset -6px 0 0 #efe2c8aa;flex:0 0 auto}
+
+/* Kaset rafı (R-FLM) */
+.rack{border-radius:10px;padding:10px 8px 0;margin-bottom:6px}
+.rack.wood{background:#5a3a22;border:3px solid #3a2414}
+.rack.teal{background:#173e42;border:3px solid #0d2a2c}
+.rack-row{display:flex;align-items:flex-end;gap:3px;min-height:112px;border-bottom:8px solid #3a2414;margin-bottom:10px;padding:0 2px;background:#00000040}
+.rack.teal .rack-row{border-bottom-color:#0d2a2c}
+.tapeset{display:flex;gap:0;flex:0 0 auto}
+.tapeset.box{padding:3px 2px 0;background:#e8c27a;border-radius:3px 3px 0 0}
+.tape{width:18px;height:100px;background:var(--c);border-radius:2px;position:relative;display:flex;justify-content:center;box-shadow:inset -3px 0 0 #0004,inset 0 0 0 1px #fff3}
+.tape.faded{opacity:.38}
+.tape .lbl{position:absolute;top:11px;bottom:11px;left:3px;right:3px;background:#f7f1e6;border-radius:1px;writing-mode:vertical-rl;transform:rotate(180deg);font-size:9.5px;color:#2a1a12;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-weight:600}
+
+/* Mağaza */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:10px 10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.item-card small{color:var(--muted);font-size:11px;margin-top:6px}
+.item-card b{font-weight:500;font-size:14px;line-height:1.25}
+.price{display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:var(--surface2);border-radius:12px;padding:5px 10px;font-size:13px;align-self:flex-start}
+.price.short{opacity:.6}
+.thumb{height:96px;flex:0 0 96px;min-height:0;border-radius:14px;background:radial-gradient(circle at 50% 70%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 70%),var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb canvas{image-rendering:pixelated;max-width:90%;max-height:86%;width:auto;height:auto}
+.thumb.sofa canvas,.thumb.rug canvas,.thumb.tapes canvas,.thumb.tv canvas{width:84%}
+.thumb.bookcase canvas{height:88%}
+.thumb.lights canvas{width:96%}
+.thumb.lamp canvas,.thumb.plant canvas,.thumb.table canvas,.thumb.art canvas,.thumb.btable canvas,.thumb.tvseat canvas,.thumb.music canvas,.thumb.chair canvas{height:78%}
+.thumb.cat canvas{width:60%}
+.thumb.view canvas{width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;display:block}
+.pick .thumb{flex-basis:70px}
+
+/* Alttan açılan sayfa */
+.sheet-layer{position:fixed;inset:0;pointer-events:none;z-index:20}
+.sheet-layer .dim{position:absolute;inset:0;background:#0008;opacity:0;transition:opacity .22s}
+.sheet-layer .sheet{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:78%;display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;transform:translateY(102%);transition:transform .24s cubic-bezier(.2,.8,.2,1);box-shadow:0 -20px 60px #000a}
+.sheet-layer.open{pointer-events:auto}
+.sheet-layer.open .dim{opacity:1}
+.sheet-layer.open .sheet{transform:none}
+.grab{width:38px;height:4px;border-radius:3px;background:var(--quiet);margin:9px auto 2px;flex:0 0 auto}
+.sheet-body{overflow-y:auto;padding:4px 18px calc(var(--safe-bottom) + 22px)}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;margin:6px 0 12px}
+.sheet-head h2{font-family:var(--book);font-weight:400;font-size:26px;margin:0;line-height:1.15}
+.sheet-actions{margin-top:16px;display:flex;gap:8px}
+.sheet-actions.col{flex-direction:column}
+.note{font-size:12.5px;color:var(--muted);background:var(--surface);border-radius:12px;padding:9px 11px;margin:10px 0 0;line-height:1.4}
+.field{display:block;margin:0 0 12px}
+.field>span{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
+.field>span em{font-style:normal;color:var(--quiet);margin-left:4px}
+.field input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 13px;font-size:16px;outline:none}
+.field input:focus{border-color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.swatches{display:flex;flex-wrap:wrap;gap:7px}
+.sw{width:30px;height:30px;border-radius:8px;background:var(--c);border:2px solid transparent;box-shadow:inset -4px 0 0 #0004}
+.sw.on{border-color:var(--text)}
+.sw.auto{width:auto;padding:0 9px;background:var(--surface);border:1px solid var(--line);font-size:12px;color:var(--muted);box-shadow:none}
+.sw.auto.on{border-color:var(--accent);color:var(--text)}
+.pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pick{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 6px 9px;text-align:center}
+.pick .thumb{height:70px;border-radius:11px;margin-bottom:6px}
+.pick b{display:block;font-weight:500;font-size:12px;line-height:1.2}
+.pick small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.pick small .coin-dot{width:10px;height:10px;margin-right:3px}
+.pick.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.pick.locked .thumb canvas{opacity:.75}
+.room-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.room-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:10px;text-align:center}
+.room-card .thumb{height:78px;margin-bottom:8px}
+.room-card b{display:block;font-size:15px;font-weight:600}
+.room-card small{color:var(--muted);font-size:12px}
+.room-card.on{border-color:var(--accent)}
+.room-card.soon{opacity:.4}
+.room-card.soon .thumb{border:2px dashed var(--quiet);background:none}
+.item-hero{height:170px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 65%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 65%),var(--surface);border-radius:20px;margin-bottom:10px}
+.item-hero canvas{image-rendering:pixelated;max-width:86%;max-height:84%;width:auto;height:84%}
+.finish-hero{display:flex;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:10px}
+.big-spine{display:block;height:110px;background:var(--c);border-radius:3px 3px 0 0;flex:0 0 auto;box-shadow:inset -5px 0 0 #0005,inset 0 4px 0 #fff3,0 0 26px color-mix(in srgb,var(--accent) 35%,transparent)}
+.big-tape{display:block;width:30px;height:110px;background:var(--c);border-radius:3px;flex:0 0 auto;box-shadow:inset 0 0 0 2px #fff3;background-image:linear-gradient(transparent 12%,#f7f1e6 12%,#f7f1e6 88%,transparent 88%);background-size:20px 100%;background-repeat:no-repeat;background-position:center}
+.card.verify{border-style:dashed;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.card.verify p{margin:0;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.card.verify b{color:var(--text)}
+.reward{background:var(--surface);border-radius:16px;padding:10px 14px;margin-top:10px}
+.reward div{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);padding:3px 0}
+.reward .tot{color:var(--gold);font-weight:600;border-top:1px solid var(--line);margin-top:4px;padding-top:7px}
+.reward div:only-child{border:0;margin:0;padding:3px 0}
+.rate{display:flex;justify-content:center;gap:8px;padding:6px 0}
+.rate button{color:var(--quiet)}.rate button.on{color:var(--gold)}
+.rate button.on .ic{fill:currentColor}
+.season-row{display:flex;flex-wrap:wrap;gap:6px}
+.season-row button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.season-row button.on{background:var(--c);color:#fff;border-color:transparent}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:12px;text-align:left}
+.toggle-row b{display:block;font-weight:600}.toggle-row small{color:var(--muted);font-size:12px}
+.switch{width:46px;height:28px;border-radius:15px;background:var(--surface2);border:1px solid var(--line);position:relative;flex:0 0 auto}
+.switch:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--quiet);transition:.2s}
+.switch.on{background:color-mix(in srgb,var(--accent) 70%,transparent)}.switch.on:after{left:21px;background:#fff}
+.slider{display:grid;grid-template-columns:1fr 44px;align-items:center;gap:4px 10px;margin:0 0 14px}
+.slider span b{font-weight:500;font-size:14px}.slider span small{color:var(--muted);font-size:11px;margin-left:6px}
+.slider input{grid-column:1/2;width:100%;accent-color:var(--accent)}
+.slider em{grid-row:1/3;grid-column:2;font-style:normal;color:var(--muted);font-size:13px;text-align:right}
+.about p{margin:6px 0}
+.welcome ol{padding-left:20px;margin:0 0 6px;color:var(--muted);font-size:14px;line-height:1.5}
+.welcome li{margin-bottom:8px}.welcome li b{color:var(--text)}
+
+/* Alt gezinme */
+.nav{position:absolute;left:12px;right:12px;bottom:calc(var(--safe-bottom) + 10px);height:62px;border-radius:30px;background:var(--nav);border:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;z-index:10;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--quiet);padding:7px 10px;border-radius:20px;min-width:56px}
+.nav button em{font-style:normal}
+.nav button.on{color:var(--text);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.nav-add span{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#24170d;display:flex;align-items:center;justify-content:center;margin-top:-6px;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
+.nav-add em{color:var(--muted)}
+.foot-space{height:12px}
+
+/* Bildirim */
+.toast{position:fixed;left:50%;top:calc(var(--safe-top) + 64px);transform:translate(-50%,-20px);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:10px 16px;border-radius:16px;font-size:13.5px;opacity:0;transition:.25s;z-index:40;pointer-events:none;max-width:86%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{border-color:var(--danger)}
+</style>
+</head>
+<body data-room="reading">
+<div id="app">
+  <header id="top" class="top"></header>
+  <main id="view" class="view"></main>
+  <nav id="nav" class="nav" aria-label="Ana gezinme"></nav>
+  <div id="sheetLayer" class="sheet-layer"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</div>
+<script>window.RAF_BUILD="LUMARAF-0.1.0-ILK-ODALAR";
+
+/* data.js */
+'use strict';
+/* LumaRaf · sabit veriler: palet, odalar, katalog, ekonomi, ses kanalları.
+   Spesifikasyon: SPEC-0.1 (R-GRS-02 palet, R-EKO katalog/ekonomi, R-EV yuvalar). */
+
+// R-GRS-02: sahne, kitap ve kaset sırtları yalnızca bu paletten renk alır.
+const C = {
+  ink:'#0f0c0b', night:'#1b1513', wood0:'#2a1a12', wood1:'#3a2014', wood2:'#4a3428', wood3:'#6b3a22',
+  rust:'#7a2e22', brick:'#9c4a2c', terra:'#c06a3a', terra2:'#c8643c', tan:'#d08a50', ochre:'#d9a05b',
+  gold:'#e8c27a', lamp:'#f2b766', cream:'#efe2c8', sand:'#c9b89a', taupe:'#b7a796', mute:'#7e6f63',
+  olive:'#5b6b3a', moss:'#3f5a3c', sage:'#93b48b', fern:'#7e926c', teal:'#173e42', slate:'#2f4a5a',
+  blue:'#365f73', aqua:'#5fa8a0', rain:'#6f8fc0', navy:'#2a2f4a', plum:'#5b3b5e', berry:'#8a4a5c',
+  rose:'#b07a6a', pink:'#ed92a2', sky0:'#0d0f1a', sky1:'#161a2b', sky2:'#20253b', white:'#f7f1e6',
+  tealD:'#11302f', wall:'#4a2a22', wallD:'#3d221c', black:'#080706'
+};
+const PALETTE = Object.values(C);
+// Kitap/kaset sırtı için seçilebilir tonlar (koyu arka planda okunur olanlar)
+const SPINE_COLORS = [C.rust,C.brick,C.terra,C.ochre,C.gold,C.olive,C.moss,C.slate,C.blue,C.rain,C.navy,C.plum,C.berry,C.rose,C.cream,C.sand,C.wood3,C.teal,C.aqua,C.sage];
+
+const BUILD = (typeof window!=='undefined'&&window.RAF_BUILD)||'LUMARAF-dev';
+
+// R-EV-01: oda anahtarları sabittir.
+const ROOMS = {
+  reading:{ key:'reading', name:'Okuma odası', eyebrow:'EVİM', hint:'Kitaplığın burada',
+            slots:['view','bookcase','art','lamp','sofa','table','rug','plant'] },
+  tv:     { key:'tv', name:'TV odası', eyebrow:'EVİM', hint:'Kasetlerin burada',
+            slots:['view','tv','tapes','music','lamp','tvseat','rug','plant'] },
+  balcony:{ key:'balcony', name:'Balkon', eyebrow:'EVİM', hint:'Yağmuru dinle',
+            slots:['view','lights','chair','btable','plant','plant2'] }
+};
+const ROOM_ORDER = ['reading','tv','balcony'];
+
+// Yuva → kabul ettiği eşya türü (R-EV-13)
+const SLOT_TYPE = { view:'view', bookcase:'bookcase', art:'art', lamp:'lamp', sofa:'sofa', table:'table', rug:'rug',
+  plant:'plant', plant2:'plant', tv:'tv', tapes:'tapes', music:'music', tvseat:'tvseat', lights:'lights', chair:'chair', btable:'btable' };
+const TYPE_LABEL = { view:'Pencere manzarası', bookcase:'Kitaplık', art:'Duvar', lamp:'Lamba', sofa:'Koltuk', table:'Sehpa',
+  rug:'Halı', plant:'Bitki', tv:'Televizyon', tapes:'Kaset rafı', music:'Müzik çalar', tvseat:'Oturma', lights:'Işıklar',
+  chair:'Sandalye', btable:'Balkon masası', cat:'Yol arkadaşı' };
+
+/* Katalog. price 0 = başlangıç eşyası (her zaman var, her yuvada kullanılabilir).
+   multi:true = aynı anda birden fazla odada kullanılabilir (manzaralar).
+   Diğer eşyaların tek kopyası vardır (R-EV-12). */
+const CATALOG = [
+  // Koltuklar
+  {id:'sofa_terra',  type:'sofa', name:'Terrakota kanepe', price:0,    look:{base:C.terra2,shade:C.brick,light:C.tan,leg:C.wood0,cush:3,arm:'round'}},
+  {id:'sofa_velvet', type:'sofa', name:'Yeşil kadife kanepe', price:650, look:{base:C.moss,shade:'#2f4630',light:C.fern,leg:C.wood1,cush:2,arm:'round'}},
+  {id:'sofa_navy',   type:'sofa', name:'Lacivert chesterfield', price:900, look:{base:C.navy,shade:'#1f2338',light:C.blue,leg:C.wood0,cush:3,arm:'scroll',tuft:true}},
+  {id:'sofa_rose',   type:'sofa', name:'Gül kurusu kanepe', price:750, look:{base:C.rose,shade:C.berry,light:'#c99686',leg:C.wood1,cush:2,arm:'square'}},
+  {id:'sofa_cream',  type:'sofa', name:'Krem modüler kanepe', price:1100, look:{base:C.sand,shade:C.taupe,light:C.cream,leg:C.wood2,cush:3,arm:'square',low:true}},
+  // Kitaplıklar
+  {id:'bc_pine',   type:'bookcase', name:'Çam kitaplık', price:0,   look:{frame:C.ochre,dark:C.wood3,back:C.wood1,shelves:4}},
+  {id:'bc_walnut', type:'bookcase', name:'Ceviz kitaplık', price:800, look:{frame:C.wood3,dark:C.wood0,back:'#24140d',shelves:5}},
+  {id:'bc_white',  type:'bookcase', name:'Beyaz kitaplık', price:600, look:{frame:C.cream,dark:C.sand,back:C.wood2,shelves:5}},
+  {id:'bc_ladder', type:'bookcase', name:'Merdivenli kütüphane', price:1400, look:{frame:C.brick,dark:C.rust,back:'#2b130c',shelves:6,ladder:true}},
+  // Lambalar
+  {id:'lamp_bulb',    type:'lamp', name:'Çıplak ampul', price:0,   look:{kind:'bulb'}},
+  {id:'lamp_floor',   type:'lamp', name:'Abajur', price:300, look:{kind:'floor',shade:C.ochre}},
+  {id:'lamp_lantern', type:'lamp', name:'Asılı fener', price:250, look:{kind:'lantern'}},
+  {id:'lamp_lava',    type:'lamp', name:'Lav lambası', price:450, look:{kind:'lava'}},
+  // Halılar
+  {id:'rug_mat',     type:'rug', name:'Hasır paspas', price:0,   look:{kind:'mat',a:C.sand,b:C.taupe}},
+  {id:'rug_kilim',   type:'rug', name:'Kilim', price:350, look:{kind:'kilim',a:C.rust,b:C.ochre,c:C.navy}},
+  {id:'rug_round',   type:'rug', name:'Örgü yuvarlak halı', price:250, look:{kind:'round',a:C.sage,b:C.cream}},
+  {id:'rug_persian', type:'rug', name:'Bordo halı', price:500, look:{kind:'persian',a:C.berry,b:C.gold,c:C.plum}},
+  // Bitkiler
+  {id:'plant_none',     type:'plant', name:'Boş köşe', price:0,   look:{kind:'none'}},
+  {id:'plant_monstera', type:'plant', name:'Monstera', price:220, look:{kind:'monstera'}},
+  {id:'plant_ivy',      type:'plant', name:'Sarmaşık', price:160, look:{kind:'ivy'}},
+  {id:'plant_cactus',   type:'plant', name:'Kaktüs', price:90,  look:{kind:'cactus'}},
+  {id:'plant_fern',     type:'plant', name:'Eğreltiotu', price:180, look:{kind:'fern'}},
+  {id:'plant_lemon',    type:'plant', name:'Limon ağacı', price:380, look:{kind:'lemon'}},
+  // Sehpa
+  {id:'table_stool', type:'table', name:'Tabure', price:0,   look:{kind:'stool'}},
+  {id:'table_round', type:'table', name:'Yuvarlak sehpa', price:260, look:{kind:'round'}},
+  // Duvar
+  {id:'art_frame',    type:'art', name:'Küçük çerçeve', price:0,   look:{kind:'frame'}},
+  {id:'art_mountain', type:'art', name:'Dağ tablosu', price:150, look:{kind:'mountain'}},
+  {id:'art_board',    type:'art', name:'Kara tahta pano', price:300, look:{kind:'board'}},
+  // Manzaralar (multi)
+  {id:'view_city',   type:'view', name:'Gece şehri', price:0,    multi:true, look:{kind:'city'}},
+  {id:'view_harbor', type:'view', name:'Liman', price:900,  multi:true, look:{kind:'harbor'}},
+  {id:'view_forest', type:'view', name:'Çam ormanı', price:800,  multi:true, look:{kind:'forest'}},
+  {id:'view_sakura', type:'view', name:'Sakura sokağı', price:1200, multi:true, look:{kind:'sakura'}},
+  // TV odası
+  {id:'tv_crt',   type:'tv', name:'Küçük tüplü TV', price:0,   look:{body:C.slate,dark:'#1d2d36',knob:C.ochre}},
+  {id:'tv_teal',  type:'tv', name:'Turkuaz retro TV', price:550, look:{body:C.aqua,dark:C.teal,knob:C.cream}},
+  {id:'tv_wood',  type:'tv', name:'Ahşap kasalı TV', price:700, look:{body:C.wood3,dark:C.wood0,knob:C.gold,wood:true}},
+  {id:'tapes_box',     type:'tapes', name:'Ahşap kaset kutusu', price:0,   look:{wood:C.wood3,dark:C.wood1,rows:1}},
+  {id:'tapes_cabinet', type:'tapes', name:'Kaset dolabı', price:800, look:{wood:C.brick,dark:C.wood0,rows:2}},
+  {id:'tvseat_pouf',  type:'tvseat', name:'Puf', price:0,   look:{kind:'pouf',base:C.blue,shade:C.slate}},
+  {id:'tvseat_bean',  type:'tvseat', name:'Armut koltuk', price:350, look:{kind:'bean',base:C.terra2,shade:C.brick}},
+  {id:'tvseat_sofa',  type:'tvseat', name:'Kadife ikili', price:850, look:{kind:'love',base:C.plum,shade:'#432a45'}},
+  {id:'music_cassette', type:'music', name:'Kasetçalar', price:0,   look:{kind:'boombox'}},
+  {id:'music_radio',    type:'music', name:'Eski radyo', price:450, look:{kind:'radio'}},
+  {id:'music_vinyl',    type:'music', name:'Pikap', price:700, look:{kind:'vinyl'}},
+  // Balkon
+  {id:'chair_wicker', type:'chair', name:'Hasır sandalye', price:0,   look:{kind:'wicker'}},
+  {id:'chair_deck',   type:'chair', name:'Şezlong', price:300, look:{kind:'deck'}},
+  {id:'chair_swing',  type:'chair', name:'Salıncak koltuk', price:950, look:{kind:'swing'}},
+  {id:'lights_none',    type:'lights', name:'Işık yok', price:0,   look:{kind:'none'}},
+  {id:'lights_fairy',   type:'lights', name:'Işık zinciri', price:280, look:{kind:'fairy'}},
+  {id:'lights_lantern', type:'lights', name:'Kâğıt fenerler', price:420, look:{kind:'paper'}},
+  {id:'btable_crate', type:'btable', name:'Ahşap kasa', price:0,   look:{kind:'crate'}},
+  {id:'btable_tea',   type:'btable', name:'Çay masası', price:240, look:{kind:'tea'}},
+  // Yol arkadaşları (yuva değil, S.companion)
+  {id:'cat_tabby', type:'cat', name:'Tekir', price:0,   look:{a:'#8a7a6a',b:'#5e5146',c:C.cream}},
+  {id:'cat_black', type:'cat', name:'Kara kedi', price:600, look:{a:'#26222a',b:'#151317',c:'#3a3540'}},
+  {id:'cat_ginger',type:'cat', name:'Sarman', price:600, look:{a:C.tan,b:C.terra,c:C.cream}},
+  {id:'cat_white', type:'cat', name:'Beyaz kedi', price:800, look:{a:C.cream,b:C.sand,c:C.white}},
+];
+const ITEM = Object.fromEntries(CATALOG.map(i=>[i.id,i]));
+const DEFAULT_ITEM = {};
+for(const i of CATALOG) if(i.price===0 && !DEFAULT_ITEM[i.type]) DEFAULT_ITEM[i.type]=i.id;
+
+const SHOP_TABS = [
+  {key:'reading', label:'Okuma odası', types:['sofa','bookcase','lamp','rug','plant','table','art']},
+  {key:'tv',      label:'TV odası',    types:['tv','tapes','tvseat','music','lamp','rug','plant']},
+  {key:'balcony', label:'Balkon',      types:['chair','lights','btable','plant']},
+  {key:'view',    label:'Manzaralar',  types:['view']},
+  {key:'cat',     label:'Arkadaşlar',  types:['cat']},
+  {key:'owned',   label:'Sahip olduklarım', types:null},
+];
+
+// R-EKO: tüm sayılar tek yerde.
+const ECONOMY = {
+  welcome:150,
+  // GEÇİCİ MOD: yapay zekâ doğrulaması bağlanana kadar "Okudum" beyanı ödül verir.
+  // Doğrulama eklendiğinde bu bayrak kapatılıp verify_base/page_bonus doğrulamaya taşınacak.
+  interimRewards:true,
+  readBase:50, pagePer100:10, pageMax:50,
+  avgPerBook:75,
+};
+
+// Ses kanalları (raf/AudioAssets.ts anahtarlarıyla aynı)
+const CHANNELS = [
+  {key:'rain', label:'Yağmur', note:'Saha kaydı · CC0'},
+  {key:'fire', label:'Şömine', note:'Saha kaydı · CC0'},
+  {key:'vinyl', label:'Plak çıtırtısı', note:'Özgün sentez'},
+  {key:'brown', label:'Yumuşak gürültü', note:'Özgün sentez'},
+];
+const PIANOS = [
+  {key:'pianoMoon', label:'Gece Notları', note:'48 BPM · özgün'},
+  {key:'pianoGlass', label:'Camdaki Damlalar', note:'84 BPM · özgün'},
+  {key:'pianoVelvet', label:'Kadife Piyano', note:'Döngü · CC0'},
+];
+const DEFAULT_MIX = {
+  reading:{rain:40,fire:0,vinyl:0,brown:0,piano:'pianoMoon',pianoVol:30},
+  tv:     {rain:20,fire:0,vinyl:30,brown:0,piano:'pianoGlass',pianoVol:25},
+  balcony:{rain:55,fire:0,vinyl:0,brown:10,piano:'pianoVelvet',pianoVol:20},
+};
+
+
+/* core.js */
+'use strict';
+/* LumaRaf · çekirdek: köprü, kalıcı durum (S), geçici ekran durumu (UI), kayıt, sayfa/sheet, bildirim. */
+
+let S = null;            // kalıcı durum — yalnızca model.js işlevleriyle değiştirilir
+const UI = {             // geçici ekran durumu — diske yazılmaz
+  tab:'home', room:'reading', edit:false, preview:null, booksView:'shelf', filmsView:'rack',
+  shopTab:'reading', sheet:null, highlight:null, saving:'idle'
+};
+
+const $ = (sel,root=document)=>root.querySelector(sel);
+const $$ = (sel,root=document)=>[...root.querySelectorAll(sel)];
+const esc = s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = (p='x')=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const nowISO = ()=>new Date().toISOString();
+const fmt = n=>Number(n||0).toLocaleString('tr-TR');
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const norm = s=>String(s||'').toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9ığüşöç ]/g,' ').replace(/\s+/g,' ').trim();
+const TR_MONTHS=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const TR_DAYS=['PAZAR','PAZARTESİ','SALI','ÇARŞAMBA','PERŞEMBE','CUMA','CUMARTESİ'];
+const TR_MONTHS_LONG=['OCAK','ŞUBAT','MART','NİSAN','MAYIS','HAZİRAN','TEMMUZ','AĞUSTOS','EYLÜL','EKİM','KASIM','ARALIK'];
+const shortDate = iso=>{if(!iso)return '';const d=new Date(iso);return d.getDate()+' '+TR_MONTHS[d.getMonth()]+' '+d.getFullYear();};
+function hash(s){let h=2166136261;for(const ch of String(s)){h^=ch.codePointAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+
+/* ---------- Köprü ---------- */
+const Native = {
+  _n:0, _wait:new Map(),
+  available(){ return !!window.ReactNativeWebView; },
+  call(type,payload={}){
+    if(!this.available() && window.PreviewNative) return window.PreviewNative.call(type,payload);
+    return new Promise((resolve,reject)=>{
+      const id='m'+(++this._n)+'-'+Date.now();
+      const timer=setTimeout(()=>{this._wait.delete(id);reject(new Error('Telefon yanıt vermedi.'));},20000);
+      this._wait.set(id,{resolve,reject,timer});
+      window.ReactNativeWebView.postMessage(JSON.stringify({id,type,payload}));
+    });
+  }
+};
+window.__rafReceive = function(msg){
+  if(msg && msg.replyTo){
+    const w=Native._wait.get(msg.replyTo); if(!w) return;
+    Native._wait.delete(msg.replyTo); clearTimeout(w.timer);
+    msg.error ? w.reject(new Error(msg.error)) : w.resolve(msg.result);
+    return;
+  }
+  if(!msg||!msg.type) return;
+  if(msg.type==='notice') toast(String(msg.payload||''));
+  else if(msg.type==='back'){ if(UI.sheet) closeSheet(); else if(UI.edit){UI.edit=false;UI.preview=null;render();} else if(UI.tab!=='home') go('home'); }
+  else if(msg.type==='background'){ Scene.pause(); persistNow(); }
+  else if(msg.type==='resume'){ Scene.resume(); syncAudio(); }
+  else if(msg.type==='audioError'){ toast('Ses çalınamadı: '+String(msg.payload||'').slice(0,80)); if(S){S.prefs.soundOn=false;persist();renderHeader();} }
+};
+window.addEventListener('error',e=>{try{Native.call('diagnostic',{message:String(e.message||e.error)}).catch(()=>{});}catch{}});
+
+/* ---------- Kayıt (R-VER-01/02) ---------- */
+let saveTimer=null, saveChain=Promise.resolve();
+function persist(){ clearTimeout(saveTimer); saveTimer=setTimeout(persistNow,260); }
+function persistNow(){
+  clearTimeout(saveTimer); saveTimer=null;
+  if(!S) return Promise.resolve();
+  const snapshot=JSON.parse(JSON.stringify(S));
+  UI.saving='saving';
+  saveChain=saveChain.then(()=>Native.call('save',{state:snapshot})).then(()=>{UI.saving='saved';},e=>{UI.saving='error';toast('Kaydedilemedi: '+e.message);throw e;});
+  return saveChain.catch(()=>{});
+}
+
+/* ---------- Bildirim ---------- */
+let toastTimer=null;
+function toast(text,kind=''){
+  const el=$('#toast'); if(!el) return;
+  el.textContent=text; el.className='toast show '+kind;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.className='toast',2600);
+}
+
+/* ---------- Alttan açılan sayfa ---------- */
+function openSheet(name,args={}){ UI.sheet={name,args}; renderSheet(); }
+function closeSheet(){
+  const layer=$('#sheetLayer'); if(!layer) return;
+  if(UI.preview){ UI.preview=null; Scene.redraw(); }
+  layer.classList.remove('open'); UI.sheet=null;
+  setTimeout(()=>{ if(!UI.sheet) layer.innerHTML=''; },220);
+}
+function renderSheet(){
+  const layer=$('#sheetLayer'); if(!UI.sheet){ layer.innerHTML=''; return; }
+  const fn=Sheets[UI.sheet.name]; if(!fn) return;
+  const keep=layer.querySelector('.sheet-body'); const scroll=keep?keep.scrollTop:0;
+  layer.innerHTML=`<div class="dim" data-act="closeSheet"></div><section class="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="sheet-body">${fn(UI.sheet.args)}</div></section>`;
+  requestAnimationFrame(()=>layer.classList.add('open'));
+  const body=layer.querySelector('.sheet-body'); if(body) body.scrollTop=scroll;
+  hydrate(layer);
+}
+
+/* ---------- Gezinme ---------- */
+function go(tab,opts={}){
+  UI.tab=tab; UI.edit=false; UI.preview=null;
+  if(opts.room) UI.room=opts.room;
+  if(UI.sheet) closeSheet();
+  render();
+  const main=$('#view'); if(main) main.scrollTop=opts.scrollTo?main.scrollTop:0;
+  if(opts.scrollTo) requestAnimationFrame(()=>{const t=$(opts.scrollTo); if(t) t.scrollIntoView({block:'start',behavior:'smooth'});});
+}
+
+/* ---------- Olay yönlendirme: data-act="ad" data-*="..." ---------- */
+const Actions = {};
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const fn=Actions[el.dataset.act]; if(!fn) return;
+  e.preventDefault(); fn(el.dataset,el,e);
+});
+document.addEventListener('input',e=>{
+  const el=e.target.closest('[data-input]'); if(!el) return;
+  const fn=Actions[el.dataset.input]; if(fn) fn(el.dataset,el,e);
+});
+Actions.closeSheet=()=>closeSheet();
+Actions.go=d=>go(d.tab,{room:d.room,scrollTo:d.scroll});
+
+
+/* model.js */
+'use strict';
+/* LumaRaf · veri modeli. S'yi değiştiren her işlem buradadır (SPEC bölüm 11). */
+
+const SCHEMA = 1;
+
+function freshRoom(key){
+  const slots={};
+  for(const slot of ROOMS[key].slots) slots[slot]=DEFAULT_ITEM[SLOT_TYPE[slot]];
+  return { slots, lightOn:true, mix:{...DEFAULT_MIX[key]} };
+}
+function freshState(){
+  const s={
+    schema:SCHEMA, createdAt:nowISO(), deviceId:uid('d'),
+    books:{}, reading:[], media:{}, watch:[],
+    ledger:[], owned:[],
+    rooms:Object.fromEntries(ROOM_ORDER.map(k=>[k,freshRoom(k)])),
+    lastRoom:'reading',
+    companion:{itemId:'cat_tabby',name:'Mırnav'},
+    prefs:{ soundOn:true, weather:'rain', sky:'night', animations:true, shelfSort:'date', intro:false }
+  };
+  award(s,'welcome',ECONOMY.welcome,'welcome');
+  return s;
+}
+
+/* R-VER-03: normalize asla jeton veya eşya üretmez; yalnızca biçimi düzeltir. */
+function normalize(raw){
+  const s=raw&&typeof raw==='object'?raw:{};
+  const out=freshState(); out.ledger=[]; // hoş geldin hediyesi yalnızca gerçekten yeni kayıtta verilir
+  out.schema=SCHEMA;
+  out.createdAt=s.createdAt||out.createdAt; out.deviceId=s.deviceId||out.deviceId;
+  out.books=s.books&&typeof s.books==='object'?s.books:{};
+  out.reading=Array.isArray(s.reading)?s.reading.filter(r=>r&&out.books[r.bookId]):[];
+  out.media=s.media&&typeof s.media==='object'?s.media:{};
+  out.watch=Array.isArray(s.watch)?s.watch.filter(w=>w&&out.media[w.mediaId]):[];
+  // defter: refKey tekilleştirme
+  const seen=new Set(); out.ledger=[];
+  for(const tx of Array.isArray(s.ledger)?s.ledger:[]){
+    if(!tx||typeof tx.amount!=='number'||!tx.refKey||seen.has(tx.refKey)) continue;
+    seen.add(tx.refKey); out.ledger.push(tx);
+  }
+  out.owned=(Array.isArray(s.owned)?s.owned:[]).filter(o=>o&&ITEM[o.itemId]&&ITEM[o.itemId].price>0);
+  for(const key of ROOM_ORDER){
+    const r=(s.rooms&&s.rooms[key])||{};
+    const room=freshRoom(key);
+    for(const slot of ROOMS[key].slots){
+      const id=r.slots&&r.slots[slot];
+      if(id&&ITEM[id]&&ITEM[id].type===SLOT_TYPE[slot]&&(ITEM[id].price===0||out.owned.some(o=>o.itemId===id))) room.slots[slot]=id;
+    }
+    room.lightOn=r.lightOn!==false;
+    if(r.mix) room.mix={...room.mix,...r.mix};
+    out.rooms[key]=room;
+  }
+  // tek kopya: aynı eşya iki yuvadaysa ilki kalır
+  const used=new Set();
+  for(const key of ROOM_ORDER) for(const slot of ROOMS[key].slots){
+    const id=out.rooms[key].slots[slot], it=ITEM[id];
+    if(it.price===0||it.multi) continue;
+    if(used.has(id)) out.rooms[key].slots[slot]=DEFAULT_ITEM[it.type]; else used.add(id);
+  }
+  out.lastRoom=ROOMS[s.lastRoom]?s.lastRoom:'reading';
+  const c=s.companion||{};
+  out.companion={itemId:(ITEM[c.itemId]&&(ITEM[c.itemId].price===0||out.owned.some(o=>o.itemId===c.itemId)))?c.itemId:'cat_tabby',name:String(c.name||'Mırnav').slice(0,24)};
+  out.prefs={...out.prefs,...(s.prefs||{})};
+  return out;
+}
+
+/* ---------- Jeton defteri (R-EKO-01/02) ---------- */
+function balance(s=S){ return s.ledger.reduce((t,x)=>t+x.amount,0); }
+function hasRef(refKey,s=S){ return s.ledger.some(x=>x.refKey===refKey); }
+function award(s,reason,amount,refKey){
+  if(!amount||s.ledger.some(x=>x.refKey===refKey)) return 0;
+  s.ledger.push({id:uid('t'),at:nowISO(),amount,reason,refKey});
+  return amount;
+}
+
+/* ---------- Kitaplar ---------- */
+function pageBonus(pages){ return Math.min(ECONOMY.pageMax,Math.floor((Number(pages)||0)/100)*ECONOMY.pagePer100); }
+function readReward(book){ return ECONOMY.interimRewards ? ECONOMY.readBase+pageBonus(book.pageCount) : 0; }
+function spineColorFor(title,author){ return SPINE_COLORS[hash(norm(title)+'|'+norm(author))%SPINE_COLORS.length]; }
+function findBookEntry(title,author){
+  const k=norm(title)+'|'+norm(author);
+  return S.reading.find(r=>{const b=S.books[r.bookId];return b&&norm(b.title)+'|'+norm(b.authors.join(', '))===k;});
+}
+function addBook({title,author,pages,status,color}){
+  title=String(title||'').trim().slice(0,140); author=String(author||'').trim().slice(0,100);
+  if(!title) throw new Error('Kitabın adını yaz.');
+  const existing=findBookEntry(title,author);
+  if(existing){
+    if(existing.status==='read') throw new Error('Bu kitap zaten rafında.');
+    return {entry:existing,existed:true};
+  }
+  const id=uid('b');
+  const book={id,title,authors:author?[author]:[],pageCount:pages?clamp(Math.round(Number(pages)),1,5000):null,
+    kind:'fiction',spineColor:color&&SPINE_COLORS.includes(color)?color:spineColorFor(title,author),source:'manual',createdAt:nowISO()};
+  S.books[id]=book;
+  const entry={id:uid('r'),bookId:id,status:'planned',addedAt:nowISO(),readCount:0};
+  S.reading.push(entry);
+  if(status==='reading') entry.status='reading', entry.startedAt=nowISO();
+  return {entry,existed:false};
+}
+function startReading(entry){ entry.status='reading'; entry.startedAt=entry.startedAt||nowISO(); }
+function planAgain(entry){ entry.status='planned'; delete entry.startedAt; }
+/* Okudum → rafa. Doğrulama bağlanınca burası özet/test sonucunu bekleyecek (R-DOG-40/41). */
+function finishBook(entry){
+  const book=S.books[entry.bookId];
+  entry.status='read'; entry.finishedAt=nowISO(); entry.readCount=(entry.readCount||0)+1;
+  entry.verification={method:'interim',at:nowISO(),score:null,perfect:false};
+  let gained=0;
+  if(ECONOMY.interimRewards){
+    gained+=award(S,'read_base',ECONOMY.readBase,'book:'+book.id+':read_base');
+    gained+=award(S,'page_bonus',pageBonus(book.pageCount),'book:'+book.id+':page_bonus');
+  }
+  return gained;
+}
+function removeBook(entry){
+  S.reading=S.reading.filter(r=>r!==entry);
+  delete S.books[entry.bookId]; // R-EKO-03: kazanılan jeton defterde kalır
+}
+function readBooks(){
+  const list=S.reading.filter(r=>r.status==='read');
+  const by=S.prefs.shelfSort;
+  const B=r=>S.books[r.bookId];
+  if(by==='author') list.sort((a,b)=>(B(a).authors[0]||'').localeCompare(B(b).authors[0]||'','tr'));
+  else if(by==='color') list.sort((a,b)=>SPINE_COLORS.indexOf(B(a).spineColor)-SPINE_COLORS.indexOf(B(b).spineColor));
+  else if(by==='title') list.sort((a,b)=>B(a).title.localeCompare(B(b).title,'tr'));
+  else list.sort((a,b)=>String(a.finishedAt).localeCompare(String(b.finishedAt)));
+  return list;
+}
+const plannedBooks=()=>S.reading.filter(r=>r.status==='planned').sort((a,b)=>String(a.addedAt).localeCompare(String(b.addedAt)));
+const readingBooks=()=>S.reading.filter(r=>r.status==='reading').sort((a,b)=>String(b.startedAt).localeCompare(String(a.startedAt)));
+const readThisYear=()=>{const y=new Date().getFullYear();return S.reading.filter(r=>r.status==='read'&&r.finishedAt&&new Date(r.finishedAt).getFullYear()===y).length;};
+/* R-KIT-01..04: deterministik sırt */
+function spineFor(book){
+  const h=hash(norm(book.title)+'|'+norm((book.authors||[]).join(',')));
+  const w=book.pageCount?clamp(Math.round(book.pageCount/60),3,10):5;
+  return {w,hClass:h%3,band:(h>>4)%3,color:book.spineColor||SPINE_COLORS[(h>>3)%SPINE_COLORS.length]};
+}
+
+/* ---------- Film & dizi ---------- */
+function addMedia({title,kind,year,seasons,status}){
+  title=String(title||'').trim().slice(0,140);
+  if(!title) throw new Error('Yapımın adını yaz.');
+  kind=kind==='series'?'series':'movie';
+  const k=norm(title)+'|'+kind;
+  const ex=S.watch.find(w=>{const m=S.media[w.mediaId];return m&&norm(m.title)+'|'+m.kind===k;});
+  if(ex) throw new Error(ex.status==='watched'?'Bu yapım zaten rafında.':'Bu yapım zaten listende.');
+  const id=uid('m');
+  const n=kind==='series'?clamp(Math.round(Number(seasons)||1),1,30):null;
+  S.media[id]={id,kind,title,year:year?clamp(Math.round(Number(year)),1888,2100):null,seasons:n,spineColor:spineColorFor(title,kind),createdAt:nowISO()};
+  const entry={id:uid('w'),mediaId:id,status:status==='watched'?'watched':status==='watching'?'watching':'planned',addedAt:nowISO()};
+  if(entry.status==='watched'){entry.watchedAt=nowISO(); if(n) entry.seasonsWatched=Array.from({length:n},(_,i)=>i+1);}
+  else entry.seasonsWatched=[];
+  S.watch.push(entry);
+  return entry;
+}
+function setWatch(entry,status){
+  if(status==='watching'){ for(const w of S.watch) if(w.status==='watching'&&w!==entry) w.status='planned'; }
+  entry.status=status;
+  const m=S.media[entry.mediaId];
+  if(status==='watched'){ entry.watchedAt=nowISO(); if(m.seasons&&!(entry.seasonsWatched||[]).length) entry.seasonsWatched=Array.from({length:m.seasons},(_,i)=>i+1); }
+}
+function removeMedia(entry){ S.watch=S.watch.filter(w=>w!==entry); delete S.media[entry.mediaId]; }
+const watchedList=()=>S.watch.filter(w=>w.status==='watched').sort((a,b)=>String(a.watchedAt).localeCompare(String(b.watchedAt)));
+const plannedMedia=()=>S.watch.filter(w=>w.status!=='watched').sort((a,b)=>String(a.addedAt).localeCompare(String(b.addedAt)));
+const watchingNow=()=>S.watch.find(w=>w.status==='watching');
+
+/* ---------- Mağaza, sahiplik, yerleştirme (R-EV-10..13, R-EKO-04) ---------- */
+const owns=id=>ITEM[id]&&(ITEM[id].price===0||S.owned.some(o=>o.itemId===id));
+function buy(id){
+  const it=ITEM[id]; if(!it) throw new Error('Ürün bulunamadı.');
+  if(owns(id)) return false;
+  if(balance()<it.price) throw new Error('Jetonun yetmiyor.');
+  const tx={id:uid('t'),at:nowISO(),amount:-it.price,reason:'purchase',refKey:'buy:'+id};
+  if(hasRef(tx.refKey)) throw new Error('Bu ürün zaten satın alınmış görünüyor.');
+  S.ledger.push(tx); S.owned.push({itemId:id,at:tx.at,txId:tx.id});
+  return true;
+}
+function whereIs(id){
+  const out=[];
+  for(const key of ROOM_ORDER) for(const slot of ROOMS[key].slots) if(S.rooms[key].slots[slot]===id) out.push({room:key,slot});
+  return out;
+}
+function slotsFor(type){
+  const out=[];
+  for(const key of ROOM_ORDER) for(const slot of ROOMS[key].slots) if(SLOT_TYPE[slot]===type) out.push({room:key,slot});
+  return out;
+}
+function place(id,room,slot){
+  const it=ITEM[id];
+  if(!it||SLOT_TYPE[slot]!==it.type) throw new Error('Bu eşya oraya uymuyor.');
+  if(!owns(id)) throw new Error('Önce satın almalısın.');
+  if(it.price>0&&!it.multi) for(const w of whereIs(id)) S.rooms[w.room].slots[w.slot]=DEFAULT_ITEM[it.type];
+  S.rooms[room].slots[slot]=id;
+}
+function itemIn(room,slot){
+  if(UI.preview&&UI.preview.room===room&&UI.preview.slot===slot) return ITEM[UI.preview.itemId];
+  return ITEM[S.rooms[room].slots[slot]];
+}
+function setCompanion(id){ if(!owns(id)) throw new Error('Önce satın almalısın.'); S.companion.itemId=id; }
+
+
+/* art.js */
+'use strict';
+/* LumaRaf · kodla çizilen piksel sanat. Tüm koordinatlar 160×200 sahne pikselidir (R-GRS-01).
+   Her eşya çizimi (g, x, y, look, t, extra) imzasını kullanır; x,y eşyanın kutusunun sol üstüdür. */
+
+const Art = (()=>{
+  const R=(g,x,y,w,h,c)=>{ if(w<=0||h<=0) return; g.fillStyle=c; g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); };
+  const P=(g,x,y,c)=>R(g,x,y,1,1,c);
+  const DK=a=>`rgba(0,0,0,${a})`, LT=a=>`rgba(255,240,220,${a})`;
+  function hexA(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+  function line(g,x0,y0,x1,y1,c){ // Bresenham
+    x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);
+    const dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1;let e=dx+dy;
+    for(;;){P(g,x0,y0,c);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx;}if(e2<=dx){e+=dx;y0+=sy;}}
+  }
+  function ellipse(g,cx,cy,rx,ry,c){
+    for(let y=-ry;y<=ry;y++){const w=Math.round(rx*Math.sqrt(Math.max(0,1-(y*y)/(ry*ry+.01))));R(g,cx-w,cy+y,w*2+1,1,c);}
+  }
+  function glow(g,cx,cy,r,color,a){
+    const gr=g.createRadialGradient(cx,cy,0,cx,cy,r);
+    gr.addColorStop(0,hexA(color,a)); gr.addColorStop(.45,hexA(color,a*.45)); gr.addColorStop(1,hexA(color,0));
+    const prev=g.globalCompositeOperation; g.globalCompositeOperation='lighter';
+    g.fillStyle=gr; g.fillRect(cx-r,cy-r,r*2,r*2); g.globalCompositeOperation=prev;
+  }
+  // Şablon: karakter → renk eşlemesi ile piksel dizisi
+  function sprite(g,x,y,rows,map,flip=false){
+    rows.forEach((row,j)=>{ for(let i=0;i<row.length;i++){ const ch=row[flip?row.length-1-i:i]; const c=map[ch]; if(c) P(g,x+i,y+j,c); } });
+  }
+
+  /* ---------------- Manzara ---------------- */
+  function sky(g,x,y,w,h,mode){
+    const bands = mode==='dusk' ? [C.plum,'#6e4560',C.berry,C.rose,C.tan] : [C.sky0,C.sky1,C.sky2,C.navy];
+    const bh=Math.ceil(h/bands.length);
+    bands.forEach((c,i)=>R(g,x,y+i*bh,w,bh+1,c));
+  }
+  function view(g,x,y,w,h,look,t,env){
+    g.save(); g.beginPath(); g.rect(x,y,w,h); g.clip();
+    const rnd=rng(hash(look.kind+w+'x'+h));
+    sky(g,x,y,w,h,env.sky);
+    const night=env.sky!=='dusk';
+    if(env.weather==='clear'&&night){ for(let i=0;i<w*h/90;i++) P(g,x+rnd()*w,y+rnd()*h*.6,(i%5===0)?C.gold:C.taupe); }
+    if(env.weather!=='rain'){ ellipse(g,x+w*.78,y+h*.16,3,3,night?C.cream:C.gold); }
+    if(look.kind==='city'||look.kind==='sakura'){
+      // uzak bloklar
+      let bx=x-2; while(bx<x+w){ const bw=6+Math.floor(rnd()*10), bhh=h*.25+rnd()*h*.35; R(g,bx,y+h-bhh,bw,bhh,'#1c2034'); bx+=bw+1; }
+      // yakın bloklar ve pencereler
+      bx=x-3; while(bx<x+w){
+        const bw=10+Math.floor(rnd()*14), bhh=h*.18+rnd()*h*.42, top=y+h-bhh;
+        R(g,bx,top,bw,bhh,look.kind==='sakura'?'#2b2238':C.navy); R(g,bx,top,bw,1,'#3a3f5c');
+        for(let wy=top+3;wy<y+h-2;wy+=4) for(let wx=bx+2;wx<bx+bw-2;wx+=3){
+          const r=rnd(); const on=r<.38 && ((Math.floor(t/7+r*30))%9!==0);
+          P(g,wx,wy,on?(r<.12?C.lamp:C.gold):'#22263a'); if(on) P(g,wx,wy+1,hexA(C.ochre,.7));
+        }
+        bx+=bw+1;
+      }
+      if(look.kind==='sakura'){
+        for(let i=0;i<4;i++){ const tx=x+8+i*(w/4)+rnd()*4, ty=y+h-6; R(g,tx,ty-12,2,12,C.wood1);
+          ellipse(g,tx+1,ty-16,8,6,C.berry); ellipse(g,tx+1,ty-17,7,5,C.pink); for(let k=0;k<8;k++)P(g,tx-5+rnd()*12,ty-20+rnd()*8,C.cream); }
+        R(g,x,y+h-3,w,3,'#3a2e3e');
+      }
+    } else if(look.kind==='harbor'){
+      const sea=y+Math.round(h*.62);
+      R(g,x,sea-6,w,6,'#1a1f30'); for(let i=0;i<w;i+=7) R(g,x+i,sea-6-rnd()*5,7,6,'#1a1f30');
+      R(g,x,sea,w,y+h-sea,'#18233a');
+      for(let yy=sea+2;yy<y+h;yy+=3) for(let i=0;i<w;i+=6) R(g,x+i+((yy+Math.floor(t*2))%6),yy,3,1,'#24324d');
+      const lx=x+w*.82; R(g,lx,sea-22,4,22,C.cream); R(g,lx,sea-14,4,3,C.rust); R(g,lx-1,sea-25,6,3,C.slate);
+      const beam=(Math.sin(t*1.4)+1)/2; glow(g,lx+2,sea-23,10+beam*8,C.gold,.55);
+      for(let i=0;i<3;i++){ const bx=x+8+i*w*.22; R(g,bx,sea+4+i*3,7,2,C.wood1); P(g,bx+3,sea+3+i*3,C.lamp); R(g,bx+3,sea+7+i*3,1,4,hexA(C.lamp,.35)); }
+    } else if(look.kind==='forest'){
+      ellipse(g,x+w*.3,y+h*.22,5,5,C.cream);
+      const layer=(base,col,step,hh)=>{ for(let i=-4;i<w+6;i+=step){ const th=hh*(.7+rnd()*.5), px=x+i; for(let k=0;k<th;k++){ const half=Math.floor((k/th)*step*.7); R(g,px-half,y+h-th+k-(base),half*2+1,1,col);} } };
+      layer(10,'#1b2a2a',7,h*.5); layer(4,'#162420',9,h*.55); layer(0,'#0f1a16',11,h*.45);
+      R(g,x,y+h*.72,w,2,hexA(C.taupe,.12));
+    }
+    // hava
+    if(env.weather==='rain'&&env.anim!==false){
+      const n=Math.floor(w*h/55); const rr=rng(77);
+      for(let i=0;i<n;i++){ const sx=rr(), sy=rr(), sp=.6+rr()*.6;
+        const dy=((sy*h + t*h*sp*1.6)%h), dx=(sx*w - dy*.12 + w)%w;
+        R(g,x+dx,y+dy,1,2+(sp>.9?1:0),hexA(C.rain,.55+sp*.25)); }
+    } else if(env.weather==='rain'){
+      const rr=rng(77); for(let i=0;i<w*h/55;i++) R(g,x+rr()*w,y+rr()*h,1,2,hexA(C.rain,.6));
+    } else if(env.weather==='snow'){
+      const rr=rng(91); for(let i=0;i<w*h/70;i++){ const sx=rr(),sy=rr(),sp=.3+rr()*.4;
+        const dy=(sy*h+t*h*sp*.35)%h, dx=(sx*w+Math.sin(t+i)*2+w)%w; R(g,x+dx,y+dy,rr()<.2?2:1,1,C.cream); }
+      R(g,x,y+h-2,w,2,hexA(C.cream,.65));
+    }
+    if(look.kind==='sakura'&&env.anim!==false){ const rr=rng(31); for(let i=0;i<10;i++){ const dy=(rr()*h+t*8)%h; P(g,x+(rr()*w+Math.sin(t+i)*3+w)%w,y+dy,C.pink);} }
+    g.restore();
+  }
+  // Cam üzerindeki yağmur izleri (Referans 1)
+  function glassDrips(g,x,y,w,h,t,on){
+    if(!on) return; const rr=rng(hash('drip'+x+w));
+    for(let i=0;i<w;i+=2){ const len=1+Math.floor(rr()*rr()*9); R(g,x+i,y,1,len,hexA(C.rain,.55)); }
+    for(let i=0;i<5;i++){ const dx=rr()*w, sp=.15+rr()*.2; const dy=((rr()*h)+t*h*sp)%h; R(g,x+dx,y+dy,1,4,hexA(C.cream,.22)); }
+  }
+  function windowFrame(g,x,y,w,h,panes,col,dark){
+    R(g,x-3,y-3,w+6,3,col); R(g,x-3,y+h,w+6,3,col); R(g,x-3,y,3,h,col); R(g,x+w,y,3,h,col);
+    R(g,x-3,y-3,w+6,1,LT(.25)); R(g,x-1,y,1,h,DK(.35));
+    for(let i=1;i<panes;i++){ const mx=x+Math.round(i*w/panes)-1; R(g,mx,y,2,h,col); R(g,mx+1,y,1,h,DK(.3)); }
+    R(g,x-5,y+h+3,w+10,3,col); R(g,x-5,y+h+5,w+10,1,dark);
+  }
+
+  /* ---------------- Kitaplık ---------------- */
+  function bookcase(g,x,y,look,books,t,opt={}){
+    const w=38,h=140,n=look.shelves;
+    R(g,x,y,w,h,look.frame); R(g,x+3,y+4,w-6,h-10,look.back);
+    R(g,x,y,w,3,look.frame); R(g,x-1,y,w+2,2,LT(.18)); R(g,x,y+h-6,w,6,look.dark);
+    R(g,x+w-2,y,2,h,DK(.25));
+    const innerTop=y+4, innerH=h-10, ch=Math.floor((innerH-(n-1)*2)/n), innerW=w-6;
+    const comps=[]; for(let i=0;i<n;i++){ const cy=innerTop+i*(ch+2); comps.push({y:cy,h:ch}); if(i<n-1){R(g,x+3,cy+ch,w-6,2,look.frame);R(g,x+3,cy+ch+1,w-6,1,DK(.25));} }
+    // kitapları rafa diz
+    let ci=0, cx=x+3; const overflow=[]; const hl=opt.highlight;
+    for(const b of books){
+      const sp=b.spine; if(ci>=n){ overflow.push(b); continue; }
+      if(cx+sp.w>x+3+innerW){ ci++; cx=x+3; if(ci>=n){ overflow.push(b); continue; } }
+      const comp=comps[ci]; const bh=Math.max(8,comp.h-2-[7,4,1][sp.hClass]);
+      const by=comp.y+comp.h-bh;
+      R(g,cx,by,sp.w,bh,sp.color); R(g,cx,by,sp.w,1,LT(.22)); R(g,cx+sp.w-1,by,1,bh,DK(.28));
+      if(sp.band>0) R(g,cx,by+Math.floor(bh*.22),sp.w,1,DK(.3));
+      if(sp.band>1) R(g,cx,by+Math.floor(bh*.75),sp.w,1,LT(.3));
+      if(sp.gold) R(g,cx,by+1,sp.w,2,C.gold);
+      if(hl&&b.id===hl){ const a=.5+.5*Math.sin(t*6); R(g,cx-1,by-1,sp.w+2,1,hexA(C.lamp,a)); R(g,cx-1,by-1,1,bh+1,hexA(C.lamp,a)); R(g,cx+sp.w,by-1,1,bh+1,hexA(C.lamp,a)); }
+      cx+=sp.w;
+    }
+    // boş raflara küçük süsler
+    comps.forEach((comp,i)=>{
+      const used = i<ci ? innerW : i===ci ? cx-(x+3) : 0;
+      if(innerW-used<11) return;
+      const ex=x+w-14, ey=comp.y+comp.h;
+      if(i%3===0){ R(g,ex+2,ey-5,6,5,C.terra); R(g,ex+1,ey-6,8,1,C.brick); R(g,ex+3,ey-10,1,4,C.moss); R(g,ex+5,ey-12,1,6,C.sage); R(g,ex+6,ey-9,2,1,C.sage); }
+      else if(i%3===1){ R(g,ex+1,ey-3,10,3,C.sand); R(g,ex+2,ey-6,8,3,C.rose); }
+      else { R(g,ex+4,ey-8,3,8,C.slate); R(g,ex+5,ey-9,1,1,C.cream); }
+    });
+    // taşan kitaplar: üstte yatay yığın (R-KIT-06)
+    overflow.slice(0,6).forEach((b,i)=>{ const bw=16+(b.spine.w%5)*2; R(g,x+3+(i%2)*3,y-3-i*3,bw,3,b.spine.color); R(g,x+3+(i%2)*3,y-3-i*3,bw,1,LT(.2)); });
+    if(look.ladder){
+      for(let k=0;k<2;k++) line(g,x+w-6+k*6,y+h+6,x+w-2+k*6,y+8,C.wood0);
+      for(let r=0;r<9;r++){ const yy=y+16+r*15, f=(yy-(y+8))/(h-2); R(g,x+w-2-Math.round((1-f)*-4),yy,6,1,C.wood2); }
+      R(g,x+w-3,y+4,2,2,C.gold);
+    }
+    return {overflow:overflow.length};
+  }
+  function bookcaseCapacity(look){ const ch=Math.floor((130-(look.shelves-1)*2)/look.shelves); return {shelves:look.shelves,width:32,ch}; }
+
+  /* ---------------- Koltuklar ---------------- */
+  function sofa(g,x,y,look){
+    const top=y+(look.low?10:0);
+    // arka minder
+    R(g,x+6,top,68,30-(top-y),look.base); R(g,x+6,top,68,1,look.light); R(g,x+6,top+1,68,1,hexA(C.cream,.12));
+    const cw=Math.floor(68/look.cush);
+    for(let i=1;i<look.cush;i++){ R(g,x+6+i*cw,top+2,1,26-(top-y),look.shade); }
+    if(look.tuft) for(let yy=top+5;yy<y+24;yy+=6) for(let xx=x+10+(yy%12?3:0);xx<x+72;xx+=7) P(g,xx,yy,look.shade);
+    // oturma
+    R(g,x+4,y+26,72,12,look.base); R(g,x+4,y+26,72,2,look.light); R(g,x+4,y+35,72,3,look.shade);
+    for(let i=1;i<look.cush;i++) R(g,x+4+i*Math.floor(72/look.cush),y+27,1,9,look.shade);
+    // kollar
+    const arm=(ax)=>{
+      if(look.arm==='scroll'){ R(g,ax,y+12,12,30,look.base); ellipse(g,ax+6,y+13,6,4,look.base); R(g,ax+1,y+10,10,1,look.light); R(g,ax+3,y+14,6,1,look.shade); }
+      else if(look.arm==='square'){ R(g,ax,y+14,11,28,look.base); R(g,ax,y+14,11,1,look.light); }
+      else { R(g,ax,y+16,11,26,look.base); R(g,ax+1,y+14,9,2,look.base); R(g,ax+1,y+14,9,1,look.light); }
+      R(g,ax,y+38,11,4,look.shade);
+    };
+    arm(x); arm(x+69); R(g,x+10,y+16,1,22,DK(.15)); R(g,x+69,y+16,1,22,DK(.25));
+    R(g,x+2,y+40,76,4,look.shade); R(g,x+2,y+43,76,1,DK(.3));
+    R(g,x+6,y+44,3,5,look.leg); R(g,x+71,y+44,3,5,look.leg);
+    // dekoratif yastık
+    R(g,x+14,y+18,10,9,C.cream); R(g,x+14,y+18,10,1,C.white); R(g,x+15,y+21,8,1,hexA(C.ochre,.6));
+  }
+  function tvseat(g,x,y,look){
+    if(look.kind==='pouf'){ ellipse(g,x+18,y+20,16,9,look.base); R(g,x+3,y+20,31,8,look.base); ellipse(g,x+18,y+28,15,4,look.shade); ellipse(g,x+18,y+14,14,4,hexA(C.cream,.18)); R(g,x+17,y+12,2,10,look.shade); }
+    else if(look.kind==='bean'){ ellipse(g,x+18,y+22,17,10,look.base); ellipse(g,x+14,y+12,11,9,look.base); ellipse(g,x+12,y+8,7,4,hexA(C.cream,.18)); ellipse(g,x+20,y+30,15,3,look.shade); }
+    else { R(g,x+3,y+4,30,14,look.base); R(g,x+3,y+4,30,1,hexA(C.cream,.2)); R(g,x,y+12,36,12,look.base); R(g,x+1,y+12,34,1,hexA(C.cream,.2)); R(g,x,y+8,5,18,look.shade); R(g,x+31,y+8,5,18,look.shade); R(g,x+17,y+5,1,12,look.shade); R(g,x+2,y+24,32,3,look.shade); R(g,x+3,y+27,2,4,C.wood0); R(g,x+31,y+27,2,4,C.wood0); }
+  }
+  function chair(g,x,y,look,t){
+    if(look.kind==='wicker'){
+      R(g,x+6,y,26,24,C.ochre); for(let yy=y+2;yy<y+24;yy+=3) R(g,x+7,yy,24,1,C.tan); for(let xx=x+8;xx<x+31;xx+=4) R(g,xx,y+1,1,22,hexA(C.wood3,.5));
+      R(g,x+2,y+22,34,8,C.ochre); R(g,x+2,y+22,34,1,C.gold); R(g,x+4,y+24,30,4,C.cream); R(g,x+4,y+24,30,1,C.white);
+      R(g,x+4,y+30,2,18,C.wood3); R(g,x+32,y+30,2,18,C.wood3); R(g,x+9,y+30,2,14,C.wood2); R(g,x+27,y+30,2,14,C.wood2);
+    } else if(look.kind==='deck'){
+      line(g,x+4,y+4,x+14,y+30,C.wood3); line(g,x+5,y+4,x+15,y+30,C.wood3);
+      for(let i=0;i<6;i++) R(g,x+5+i*2,y+6+i*4,14,3,i%2?C.cream:C.terra2);
+      R(g,x+14,y+28,24,4,C.terra2); R(g,x+14,y+28,24,1,C.tan); line(g,x+16,y+32,x+10,y+48,C.wood2); line(g,x+36,y+32,x+38,y+48,C.wood2);
+    } else {
+      const sw=Math.round(Math.sin(t*1.2)*1.5);
+      R(g,x+18,y-40,1,40,C.mute);
+      g.save(); g.translate(sw,0);
+      ellipse(g,x+18,y+18,16,20,C.ochre); ellipse(g,x+18,y+18,13,17,'#a7713f'); ellipse(g,x+18,y+24,12,9,C.cream); R(g,x+8,y+26,20,3,C.terra2);
+      for(let yy=y+2;yy<y+34;yy+=3) R(g,x+5,yy,26,1,hexA(C.wood3,.25));
+      g.restore();
+    }
+  }
+
+  /* ---------------- Işık ve lambalar ---------------- */
+  function lamp(g,x,y,look,t,on,env){
+    const flick = on ? .92+.08*Math.sin(t*9)*Math.sin(t*2.3) : 0;
+    let cx=x+9, cy=y+10;
+    if(look.kind==='bulb'){ R(g,x+9,0,1,y+8,C.wood0); R(g,x+7,y+8,5,2,C.mute); ellipse(g,x+9,y+13,3,3,on?C.lamp:C.taupe); if(on)P(g,x+9,y+12,C.white); cy=y+13; }
+    else if(look.kind==='lantern'){ R(g,x+9,0,1,y+4,C.wood0); R(g,x+5,y+4,9,2,C.wood0); R(g,x+5,y+6,9,13,on?C.ochre:C.wood2); R(g,x+6,y+7,7,11,on?C.lamp:C.wood1); R(g,x+9,y+6,1,13,C.wood0); R(g,x+5,y+19,9,2,C.wood0); cy=y+12; }
+    else if(look.kind==='floor'){
+      R(g,x+3,y,13,2,look.shade); R(g,x+2,y+2,15,8,look.shade); R(g,x+1,y+10,17,2,C.wood3); R(g,x+3,y+2,1,8,LT(.25));
+      if(on){ R(g,x+4,y+12,11,2,hexA(C.lamp,.8)); }
+      R(g,x+9,y+12,1,(env.floorY||148)-y-14,C.wood0); R(g,x+5,(env.floorY||148)-3,9,3,C.wood0); cy=y+9;
+    } else if(look.kind==='lava'){
+      R(g,x,y+26,20,3,C.wood3); R(g,x+1,y+29,2,4,C.wood1); R(g,x+17,y+29,2,4,C.wood1);
+      R(g,x+6,y+20,8,6,C.slate); R(g,x+7,y+4,6,16,on?C.berry:C.plum); R(g,x+8,y+2,4,2,C.slate);
+      if(on){ const b=Math.sin(t*.8)*4; ellipse(g,x+10,y+12+b,2,2,C.pink); ellipse(g,x+9,y+7-b*.5,1,1,C.pink); }
+      cy=y+12; cx=x+10;
+      if(on) glow(g,cx,cy,22,C.pink,.35*flick);
+      return;
+    }
+    if(on) glow(g,cx,cy,46,C.lamp,.42*flick);
+  }
+  function lights(g,look,t){
+    if(look.kind==='none') return;
+    if(look.kind==='fairy'){
+      for(let x=0;x<=160;x++){ const y=6+Math.round(Math.sin(x/160*Math.PI)*10); P(g,x,y,C.wood1); if(x%11===5){ const on=((Math.floor(t*2)+x)%7)!==0; R(g,x-1,y+1,3,3,on?C.lamp:C.wood2); if(on) glow(g,x,y+2,9,C.gold,.35); } }
+    } else {
+      const cols=[C.terra2,C.ochre,C.berry,C.lamp,C.terra];
+      for(let i=0;i<5;i++){ const x=14+i*32, sway=Math.sin(t*1.5+i)*1; R(g,x,0,1,8+i%2*4,C.wood0); const cy=14+i%2*4; ellipse(g,x+sway,cy,5,6,cols[i]); R(g,x-4+sway,cy-1,9,1,DK(.2)); R(g,x-4+sway,cy+2,9,1,DK(.2)); glow(g,x,cy,16,cols[i],.35); }
+    }
+  }
+
+  /* ---------------- Küçük eşyalar ---------------- */
+  function plant(g,x,y,look){ // kutu 24×44, alt kenar y+44
+    if(look.kind==='none') return;
+    const b=y+44;
+    const pot=(c=C.terra)=>{ R(g,x+6,b-10,12,9,c); R(g,x+5,b-11,14,2,C.brick); R(g,x+7,b-1,10,1,C.wood1); R(g,x+16,b-9,1,8,DK(.25)); };
+    if(look.kind==='monstera'){ pot(C.cream); R(g,x+11,b-24,2,14,C.moss);
+      [[2,-34],[12,-40],[14,-28],[0,-24]].forEach(([dx,dy],i)=>{ ellipse(g,x+dx+5,b+dy+5,6,4,i%2?C.moss:C.olive); P(g,x+dx+4,b+dy+5,C.wood0); P(g,x+dx+7,b+dy+4,C.wood0); R(g,x+dx+1,b+dy+5,9,1,hexA(C.sage,.5)); }); }
+    else if(look.kind==='ivy'){ pot(C.terra); for(let i=0;i<6;i++){ const lx=x+3+i*3, len=8+((i*7)%9); for(let k=0;k<len;k+=3) R(g,lx+(k%2),b-12-6+k,2,2,i%2?C.sage:C.olive); } ellipse(g,x+12,b-15,9,4,C.moss); }
+    else if(look.kind==='cactus'){ pot(C.ochre); R(g,x+10,b-28,5,18,C.olive); R(g,x+11,b-28,1,18,C.sage); R(g,x+6,b-22,4,3,C.olive); R(g,x+6,b-26,3,5,C.olive); R(g,x+15,b-20,4,3,C.olive); R(g,x+16,b-24,3,5,C.olive); P(g,x+12,b-30,C.pink); }
+    else if(look.kind==='fern'){ pot(C.slate); for(let i=0;i<7;i++){ const a=(i/6)*Math.PI; line(g,x+12,b-11,x+12-Math.cos(a)*11,b-11-Math.sin(a)*14,i%2?C.sage:C.fern); } }
+    else if(look.kind==='lemon'){ pot(C.cream); R(g,x+11,b-26,2,16,C.wood2); ellipse(g,x+12,b-32,10,9,C.moss); ellipse(g,x+10,b-34,7,6,C.olive); [[6,-30],[15,-35],[13,-27],[8,-37]].forEach(([dx,dy])=>R(g,x+dx,b+dy,2,2,C.gold)); }
+  }
+  function rug(g,x,y,look){ // 72×24
+    if(look.kind==='mat'){ R(g,x+6,y+4,60,16,look.a); for(let i=x+8;i<x+64;i+=4) R(g,i,y+5,1,14,look.b); R(g,x+6,y+4,60,1,LT(.15)); }
+    else if(look.kind==='kilim'){ R(g,x,y+2,72,20,look.a); R(g,x+2,y+4,68,16,look.b); R(g,x+4,y+6,64,12,look.a);
+      for(let i=0;i<4;i++){ const cx=x+13+i*15, cy=y+12; for(let k=0;k<5;k++) R(g,cx-k,cy-4+k,k*2+1,1,look.c), R(g,cx-k,cy+4-k,k*2+1,1,look.c); P(g,cx,cy,look.b); }
+      for(let i=x;i<x+72;i+=3){ P(g,i,y,C.cream); P(g,i,y+23,C.cream); } }
+    else if(look.kind==='round'){ ellipse(g,x+36,y+12,34,11,look.b); ellipse(g,x+36,y+12,30,9,look.a); ellipse(g,x+36,y+12,24,7,look.b); ellipse(g,x+36,y+12,17,5,look.a); ellipse(g,x+36,y+12,9,3,look.b); }
+    else { R(g,x,y+2,72,20,look.a); R(g,x+3,y+4,66,16,look.c); R(g,x+5,y+6,62,12,look.a); ellipse(g,x+36,y+12,12,5,look.b); ellipse(g,x+36,y+12,7,3,look.c); for(let i=x+3;i<x+70;i+=4){P(g,i,y+3,look.b);P(g,i,y+20,look.b);} for(let i=x;i<x+72;i+=2){ P(g,i,y,C.sand); P(g,i,y+23,C.sand);} }
+  }
+  function table(g,x,y,look,book){ // 20×24, alt y+24
+    if(look.kind==='stool'){ R(g,x+2,y+4,16,3,C.ochre); R(g,x+2,y+4,16,1,C.gold); R(g,x+4,y+7,2,17,C.wood3); R(g,x+14,y+7,2,17,C.wood3); R(g,x+5,y+16,10,1,C.wood2); }
+    else { ellipse(g,x+10,y+5,10,2,C.wood3); R(g,x,y+5,20,2,C.wood1); R(g,x+9,y+7,2,15,C.wood2); R(g,x+5,y+22,10,2,C.wood1); ellipse(g,x+10,y+4,9,1,C.tan); }
+    if(book){ R(g,x+4,y+1,12,3,C.cream); R(g,x+9,y+1,2,3,book.spineColor||C.rust); R(g,x+4,y+1,12,1,C.white); R(g,x+5,y+2,3,1,C.taupe); R(g,x+12,y+2,3,1,C.taupe); }
+    else { R(g,x+13,y,4,4,C.cream); R(g,x+17,y+1,1,2,C.cream); R(g,x+14,y,2,1,C.wood3); }
+  }
+  function art(g,x,y,look,count){ // 30×24
+    if(look.kind==='frame'){ R(g,x+6,y+4,18,16,C.ochre); R(g,x+8,y+6,14,12,C.navy); ellipse(g,x+15,y+12,3,3,C.gold); R(g,x+8,y+15,14,3,C.moss); }
+    else if(look.kind==='mountain'){ R(g,x,y,30,24,C.wood3); R(g,x+2,y+2,26,20,C.slate); for(let k=0;k<10;k++) R(g,x+12-k,y+8+k,k*2+1,1,C.sage); for(let k=0;k<7;k++) R(g,x+22-k,y+12+k,k*2+1,1,C.fern); R(g,x+21,y+5,3,3,C.gold); R(g,x+2,y+20,26,2,C.moss); }
+    else { R(g,x-2,y-2,34,28,C.wood3); R(g,x,y,30,24,'#1f2a24'); R(g,x+2,y+2,10,1,hexA(C.cream,.7)); R(g,x+2,y+4,6,1,hexA(C.cream,.5));
+      const n=Math.min(count||0,25); for(let i=0;i<n;i++){ const grp=Math.floor(i/5), k=i%5; const gx=x+3+grp*5, gy=y+8+Math.floor(grp/5)*9; if(k<4) R(g,gx+k,gy,1,6,C.cream); else line(g,gx-1,gy+5,gx+4,gy,C.gold); }
+      if(!n){ R(g,x+4,y+12,22,1,hexA(C.cream,.25)); } }
+  }
+  /* TV odası */
+  function tv(g,x,y,look,t,media,anim){ // 52×40
+    R(g,x+20,y-12,1,12,C.mute); line(g,x+20,y-12,x+12,y-22,C.mute); line(g,x+21,y-12,x+30,y-24,C.mute); R(g,x+16,y-2,10,2,C.slate);
+    R(g,x,y,52,40,look.body); R(g,x,y,52,1,LT(.25)); R(g,x+51,y,1,40,DK(.3)); R(g,x,y+38,52,2,look.dark);
+    if(look.wood){ for(let i=y+3;i<y+38;i+=4) R(g,x+1,i,50,1,hexA(C.wood0,.35)); }
+    const sx=x+4,sy=y+4,sw=36,sh=30;
+    R(g,sx,sy,sw,sh,C.black);
+    if(media){ const c=media.spineColor||C.blue; const ph=anim?t:0;
+      for(let yy=0;yy<sh;yy++){ const k=Math.sin(yy*.35+ph*2)*.5+.5; R(g,sx+1,sy+yy,sw-2,1,yy<sh*.55?hexA(c,.45+k*.3):hexA(C.aqua,.25+k*.25)); }
+      ellipse(g,sx+sw*.65,sy+sh*.35,4,4,hexA(C.gold,.7)); R(g,sx+3,sy+sh-6,sw-6,2,hexA(C.cream,.35));
+    } else { const rr=rng(Math.floor(anim?t*8:1)); for(let i=0;i<70;i++) P(g,sx+1+rr()*(sw-2),sy+1+rr()*(sh-2),rr()<.5?C.slate:C.navy); }
+    R(g,sx,sy,sw,1,LT(.15)); R(g,sx,sy,1,sh,LT(.08)); P(g,sx,sy,look.body); P(g,sx+sw-1,sy,look.body); P(g,sx,sy+sh-1,look.body); P(g,sx+sw-1,sy+sh-1,look.body);
+    ellipse(g,x+46,y+10,2,2,look.knob); ellipse(g,x+46,y+18,2,2,look.knob); for(let i=0;i<4;i++) R(g,x+43,y+25+i*3,6,1,look.dark);
+    if(anim||media) glow(g,sx+sw/2,sy+sh/2,34,media?C.aqua:C.rain,media?.3:.12);
+  }
+  function tapes(g,x,y,look,list,t,hl){ // 64×30 dolap, alt y+30; list = [{color,series,seasons,id}]
+    const rows=look.rows, h=30;
+    R(g,x,y,64,h,look.wood); R(g,x,y,64,1,LT(.2)); R(g,x+63,y,1,h,DK(.3)); R(g,x,y+h-3,64,3,look.dark);
+    const rowH=Math.floor((h-6)/rows); let placed=0; const cap=rows*20;
+    for(let r=0;r<rows;r++){
+      const ry=y+2+r*(rowH+1); R(g,x+3,ry,58,rowH,look.dark);
+      let cx=x+4;
+      while(placed<list.length && cx<x+60){
+        const m=list[placed]; const n=m.series?Math.max(1,m.count):1;
+        if(cx+n*3>x+61) break;
+        for(let k=0;k<n;k++){ const faded=m.series&&k>=m.watched; R(g,cx,ry+1,3,rowH-1,faded?hexA(m.color,.4):m.color); R(g,cx,ry+3,3,Math.max(2,rowH-7),hexA(C.white,faded?.25:.8)); R(g,cx+2,ry+1,1,rowH-1,DK(.25)); cx+=3; }
+        if(m.series){ R(g,cx-n*3,ry+1,n*3,1,C.gold); }
+        if(hl&&m.id===hl){ const a=.5+.5*Math.sin(t*6); R(g,cx-n*3-1,ry,n*3+2,1,hexA(C.lamp,a)); }
+        placed++; cx+=1;
+      }
+    }
+    // taşanlar üstte yatay yığın
+    list.slice(placed).slice(0,5).forEach((m,i)=>{ R(g,x+44-(i%2)*2,y-3-i*3,16,3,m.color); R(g,x+44-(i%2)*2,y-2-i*3,16,1,hexA(C.white,.6)); });
+    return {cap};
+  }
+  function planShelf(g,x,y,list){ // 30 genişlik raf; kasetler üstünde dikey
+    R(g,x,y,30,3,C.wood3); R(g,x,y,30,1,C.tan); R(g,x+3,y+3,2,4,C.wood1); R(g,x+25,y+3,2,4,C.wood1);
+    list.slice(0,7).forEach((m,i)=>{ const cx=x+2+i*4; R(g,cx,y-13,4,13,m.color); R(g,cx+1,y-10,2,7,hexA(C.white,.75)); R(g,cx+3,y-13,1,13,DK(.25)); });
+  }
+  function posters(g,x,y,list){
+    if(!list.length){ R(g,x+2,y+4,14,20,C.wood2); R(g,x+3,y+5,12,18,C.tealD); R(g,x+5,y+15,8,1,hexA(C.cream,.3)); return; }
+    list.slice(0,2).forEach((m,i)=>{ const px=x+i*15, py=y+i*5; R(g,px,py,13,19,C.cream); R(g,px+1,py+1,11,17,m.color);
+      const h=hash(m.title); ellipse(g,px+6,py+6+(h%4),2+(h%2),2+(h%2),C.gold); R(g,px+1,py+12,11,6,hexA(C.black,.35)); R(g,px+2,py+15,7,1,C.cream); R(g,px+2,py+17,5,1,hexA(C.cream,.6)); });
+  }
+  function music(g,x,y,look,t,anim){ // masa + cihaz, kutu 36×30, alt y+30
+    R(g,x,y+12,36,3,C.wood3); R(g,x,y+12,36,1,C.tan); R(g,x+2,y+15,2,15,C.wood1); R(g,x+32,y+15,2,15,C.wood1); R(g,x+3,y+24,30,1,C.wood2);
+    if(look.kind==='boombox'){ R(g,x+4,y+2,28,10,C.slate); R(g,x+4,y+2,28,1,LT(.2)); R(g,x+10,y-1,16,2,C.mute); ellipse(g,x+9,y+7,3,3,C.black); ellipse(g,x+27,y+7,3,3,C.black); R(g,x+14,y+4,8,5,C.navy); R(g,x+15,y+5,6,3,hexA(C.aqua,.6)); P(g,x+9,y+7,C.mute); P(g,x+27,y+7,C.mute); }
+    else if(look.kind==='radio'){ R(g,x+6,y,24,12,C.wood3); R(g,x+6,y,24,1,C.tan); for(let i=0;i<5;i++) R(g,x+8,y+2+i*2,10,1,C.wood0); R(g,x+20,y+2,8,4,C.cream); R(g,x+22+Math.round(Math.sin(t*.3)*2),y+2,1,4,C.rust); ellipse(g,x+22,y+9,1,1,C.gold); ellipse(g,x+26,y+9,1,1,C.gold); }
+    else { R(g,x+3,y+6,30,6,C.wood2); R(g,x+3,y+6,30,1,C.tan); ellipse(g,x+15,y+6,11,2,C.black); ellipse(g,x+15,y+6,3,1,C.terra2);
+      const a=anim?t*3.5:0; P(g,x+15+Math.round(Math.cos(a)*8),y+6+Math.round(Math.sin(a)*1.5),C.mute); line(g,x+30,y+3,x+23,y+6,C.cream); R(g,x+29,y+2,3,2,C.mute); }
+  }
+  function btable(g,x,y,look){ // 26×26, alt y+26
+    if(look.kind==='crate'){ R(g,x+1,y+8,24,18,C.ochre); for(let i=0;i<3;i++) R(g,x+1,y+9+i*6,24,1,C.wood3); R(g,x+1,y+8,24,1,C.gold); R(g,x+1,y+8,1,18,C.wood3); R(g,x+24,y+8,1,18,C.wood3); }
+    else { R(g,x,y+10,26,3,C.wood3); R(g,x,y+10,26,1,C.tan); R(g,x+3,y+13,2,13,C.wood1); R(g,x+21,y+13,2,13,C.wood1); R(g,x+3,y+4,8,6,C.cream); R(g,x+11,y+5,2,2,C.cream); R(g,x+4,y+2,6,2,C.terra2); }
+    R(g,x+15,y+4,5,4,look.kind==='crate'?C.cream:C.white); R(g,x+16,y+4,3,1,C.rust); R(g,x+20,y+5,1,2,C.cream);
+  }
+  /* Kedi: yatan poz, şablon */
+  const CAT_ROWS=[
+    '...............b...b..',
+    '..............bab.bab.',
+    '..............aaaaaaa.',
+    '......abaabaaaaakaaka.',
+    '....aaabaabaaabaaapaa.',
+    '...aaaaaaaaaaaaaaacca.',
+    '..aaaccccccccccaaaa...',
+    '..aaaaaaaaaaaaaaaa....',
+  ];
+  function cat(g,x,y,look,t,anim){
+    const breathe=anim&&Math.sin(t*1.6)>.6?1:0;
+    const map={a:look.a,b:look.b,c:look.c,k:C.black,p:C.pink};
+    sprite(g,x,y-breathe*0,CAT_ROWS,map);
+    if(breathe) R(g,x+6,y+4,9,1,look.a);
+    const sw=anim?Math.round(Math.sin(t*1.1)*1.5):0;
+    R(g,x,y+6,3,1,look.a); R(g,x-1+sw,y+4,2,2,look.a); R(g,x-2+sw,y+3,2,1,look.b);
+  }
+
+  /* Sırtları sahnede kullanılacak biçime çevir */
+  function spinesFrom(entries){
+    return entries.map(r=>{ const b=S.books[r.bookId]; const sp=spineFor(b); return {id:r.id,spine:{...sp,gold:!!(r.verification&&r.verification.perfect)}}; });
+  }
+  function tapeList(entries){
+    return entries.map(w=>{ const m=S.media[w.mediaId]; return {id:w.id,title:m.title,color:m.spineColor,series:m.kind==='series',count:m.seasons||1,watched:(w.seasonsWatched||[]).length}; });
+  }
+
+  return {R,P,glow,ellipse,line,hexA,view,glassDrips,windowFrame,bookcase,bookcaseCapacity,sofa,tvseat,chair,lamp,lights,plant,rug,table,art,tv,tapes,planShelf,posters,music,btable,cat,spinesFrom,tapeList,DK,LT};
+})();
+
+
+/* scene.js */
+'use strict';
+/* LumaRaf · oda sahneleri. 160×200 tampona çizilir, ekrana tam piksel büyütülür. */
+
+const SW=160, SH=200;
+const Scene=(()=>{
+  let canvas=null, view=null, buf=null, g=null, raf=0, last=0, running=false, hotspots=[], t0=performance.now(), visible=true;
+  const env=()=>({weather:S.prefs.weather, sky:S.prefs.sky, anim:S.prefs.animations, floorY:148});
+  const time=()=>(performance.now()-t0)/1000;
+
+  function ensureBuf(){ if(!buf){ buf=document.createElement('canvas'); buf.width=SW; buf.height=SH; g=buf.getContext('2d'); } }
+
+  /* ----- Okuma odası ----- */
+  function reading(t,E){
+    const A=Art, room='reading', on=S.rooms[room].lightOn;
+    const hs=[];
+    // duvar
+    A.R(g,0,0,SW,148,C.wall);
+    for(let x=0;x<SW;x+=8){ A.R(g,x,6,1,140,C.wallD); A.R(g,x+4,6,1,140,'rgba(255,220,190,.035)'); }
+    A.R(g,0,0,SW,5,C.wood3); A.R(g,0,5,SW,1,C.wood0);
+    // zemin
+    A.R(g,0,148,SW,52,C.wood3);
+    for(let y=150;y<SH;y+=6){ A.R(g,0,y,SW,1,C.wood2); A.R(g,0,y+1,SW,1,'rgba(255,230,200,.05)'); const off=((y-150)/6*23)%52; for(let x=off;x<SW;x+=52) A.R(g,x,y+1,1,5,C.wood2); }
+    A.R(g,0,148,SW,1,'rgba(255,230,200,.12)'); A.R(g,0,144,SW,4,C.wood0);
+    // pencere
+    const V=itemIn(room,'view'); A.view(g,48,12,64,78,V.look,t,E); A.glassDrips(g,48,12,64,78,t,E.weather==='rain'); A.windowFrame(g,48,12,64,78,3,C.wood3,C.wood0);
+    A.R(g,42,8,76,2,C.wood1);
+    hs.push({id:'view',slot:'view',x:45,y:9,w:70,h:88,label:'Pencere'});
+    // duvar süsü
+    const ART=itemIn(room,'art'); A.art(g,121,50,ART.look,readThisYear()); hs.push({id:'art',slot:'art',x:118,y:46,w:36,h:32,label:TYPE_LABEL.art});
+    // kitaplık
+    const BC=itemIn(room,'bookcase');
+    A.bookcase(g,3,6,BC.look,A.spinesFrom(readBooks()),t,{highlight:UI.highlight&&UI.highlight.kind==='book'?UI.highlight.id:null});
+    hs.push({id:'bookcase',slot:'bookcase',x:0,y:0,w:44,h:148,label:'Kitaplık'});
+    // lamba
+    const L=itemIn(room,'lamp'); const lp={bulb:[136,20],lantern:[136,22],floor:[140,80],lava:[136,92]}[L.look.kind];
+    // kanepe
+    const SO=itemIn(room,'sofa'); A.sofa(g,38,98,SO.look); hs.push({id:'sofa',slot:'sofa',x:38,y:98,w:80,h:50,label:'Koltuk'});
+    // kedi
+    const CAT=ITEM[S.companion.itemId]; A.cat(g,72,116,CAT.look,t,E.anim); hs.push({id:'cat',x:70,y:112,w:26,h:14,label:S.companion.name});
+    // sehpa
+    const rd=readingBooks()[0]; const TB=itemIn(room,'table'); A.table(g,120,124,TB.look,rd?S.books[rd.bookId]:null);
+    hs.push({id:'table',slot:'table',x:118,y:120,w:22,h:28,label:rd?'Okuyorum':'Sehpa'});
+    // halı
+    const RU=itemIn(room,'rug'); A.rug(g,44,166,RU.look); hs.push({id:'rug',slot:'rug',x:44,y:166,w:72,h:24,label:'Halı'});
+    // okunacaklar yığını
+    const plan=plannedBooks();
+    plan.slice(0,12).forEach((r,i)=>{ const b=S.books[r.bookId]; const w=18+(hash(b.title)%9); const x=8+((hash(b.title)>>3)%4); const y=192-i*3; A.R(g,x,y,w,3,b.spineColor); A.R(g,x,y,w,1,A.LT(.2)); A.R(g,x+w-1,y,1,3,A.DK(.3)); A.R(g,x+w-3,y+1,2,1,C.cream); });
+    if(!plan.length){ A.R(g,8,190,22,1,'rgba(255,240,220,.08)'); }
+    hs.push({id:'tbr',x:4,y:150,w:36,h:48,label:'Okunacaklar'});
+    // bitki
+    const PL=itemIn(room,'plant'); A.plant(g,134,152,PL.look); hs.push({id:'plant',slot:'plant',x:130,y:150,w:30,h:48,label:'Bitki'});
+    A.lamp(g,lp[0],lp[1],L.look,t,on,E);
+    hs.push({id:'lamp',slot:'lamp',x:lp[0]-2,y:L.look.kind==='floor'?lp[1]:0,w:24,h:L.look.kind==='floor'?86:lp[1]+28,label:'Lamba'});
+    if(!on) A.R(g,0,0,SW,SH,'rgba(4,3,10,.38)');
+    return hs;
+  }
+
+  /* ----- TV odası ----- */
+  function tvroom(t,E){
+    const A=Art, room='tv', on=S.rooms[room].lightOn, hs=[];
+    A.R(g,0,0,SW,148,C.teal);
+    for(let x=6;x<SW;x+=12) A.R(g,x,0,1,118,C.tealD);
+    A.R(g,0,118,SW,30,C.tealD); A.R(g,0,118,SW,2,C.slate); A.R(g,0,144,SW,4,C.wood0);
+    A.R(g,0,148,SW,52,C.wood2);
+    for(let y=150;y<SH;y+=6){ A.R(g,0,y,SW,1,C.wood1); const off=((y-150)/6*19)%48; for(let x=off;x<SW;x+=48) A.R(g,x,y+1,1,5,C.wood1); }
+    // pencere + jaluzi
+    const V=itemIn(room,'view'); A.view(g,118,12,36,58,V.look,t,E); A.windowFrame(g,118,12,36,58,2,C.slate,C.tealD);
+    for(let y=12;y<36;y+=3) A.R(g,118,y,36,1,'rgba(239,226,200,.55)'); A.R(g,118,36,36,2,C.sand);
+    hs.push({id:'view',slot:'view',x:114,y:8,w:44,h:68,label:'Pencere'});
+    // afişler (favoriler)
+    const favs=S.watch.filter(w=>w.favorite&&w.status==='watched').map(w=>S.media[w.mediaId]);
+    A.posters(g,4,12,favs); hs.push({id:'posters',x:2,y:10,w:34,h:36,label:'Afiş duvarı'});
+    // izlenecekler rafı
+    const plan=plannedMedia().filter(w=>w.status==='planned');
+    A.planShelf(g,4,74,Art.tapeList(plan)); hs.push({id:'planrack',x:2,y:56,w:34,h:26,label:'İzleyeceklerim'});
+    // dolap + kasetler
+    const TP=itemIn(room,'tapes');
+    A.tapes(g,32,118,TP.look,Art.tapeList(watchedList()),t,UI.highlight&&UI.highlight.kind==='media'?UI.highlight.id:null);
+    hs.push({id:'tapes',slot:'tapes',x:32,y:112,w:64,h:36,label:'Kaset rafı'});
+    // televizyon
+    const TV=itemIn(room,'tv'); const w=watchingNow();
+    A.tv(g,38,78,TV.look,t,w?S.media[w.mediaId]:null,E.anim);
+    hs.push({id:'tv',slot:'tv',x:36,y:56,w:56,h:62,label:'Televizyon'});
+    // müzik
+    const MU=itemIn(room,'music'); A.music(g,118,118,MU.look,t,E.anim&&S.prefs.soundOn); hs.push({id:'music',slot:'music',x:116,y:112,w:40,h:36,label:'Müzik'});
+    // halı, oturma, kedi
+    const RU=itemIn(room,'rug'); A.rug(g,44,168,RU.look); hs.push({id:'rug',slot:'rug',x:44,y:168,w:72,h:24,label:'Halı'});
+    const SE=itemIn(room,'tvseat'); A.tvseat(g,4,160,SE.look); hs.push({id:'tvseat',slot:'tvseat',x:2,y:156,w:40,h:40,label:'Oturma'});
+    A.cat(g,9,158,ITEM[S.companion.itemId].look,t,E.anim); hs.push({id:'cat',x:6,y:154,w:26,h:12,label:S.companion.name});
+    const PL=itemIn(room,'plant'); A.plant(g,132,152,PL.look); hs.push({id:'plant',slot:'plant',x:128,y:150,w:30,h:48,label:'Bitki'});
+    const L=itemIn(room,'lamp'); const lp={bulb:[100,24],lantern:[100,26],floor:[98,62],lava:[96,92]}[L.look.kind];
+    A.lamp(g,lp[0],lp[1],L.look,t,on,E); hs.push({id:'lamp',slot:'lamp',x:lp[0]-2,y:L.look.kind==='floor'?lp[1]:0,w:22,h:L.look.kind==='floor'?86:lp[1]+28,label:'Lamba'});
+    if(!on) A.R(g,0,0,SW,SH,'rgba(2,6,10,.4)');
+    return hs;
+  }
+
+  /* ----- Balkon ----- */
+  function balcony(t,E){
+    const A=Art, room='balcony', hs=[];
+    const V=itemIn(room,'view'); A.view(g,0,0,SW,148,V.look,t,E);
+    hs.push({id:'view',slot:'view',x:14,y:22,w:110,h:80,label:'Manzara'});
+    // kapı kenarı
+    A.R(g,0,0,12,148,C.wall); A.R(g,10,0,3,148,C.cream); A.R(g,12,0,1,148,A.DK(.3)); A.R(g,3,70,3,10,C.gold);
+    // korkuluk
+    A.R(g,13,108,147,4,C.wood3); A.R(g,13,108,147,1,C.tan);
+    for(let x=16;x<SW;x+=7){ A.R(g,x,112,2,32,C.wood2); A.R(g,x+1,112,1,32,A.DK(.25)); }
+    A.R(g,13,142,147,3,C.wood3);
+    // zemin
+    A.R(g,0,145,SW,55,C.terra);
+    for(let y=145;y<SH;y+=7){ A.R(g,0,y,SW,1,C.brick); const off=((y-145)/7)%2?0:7; for(let x=off;x<SW;x+=14) A.R(g,x,y,1,7,C.brick); }
+    A.R(g,0,145,SW,2,A.DK(.25));
+    const P2=itemIn(room,'plant2'); A.plant(g,128,64,P2.look); hs.push({id:'plant2',slot:'plant2',x:124,y:62,w:32,h:48,label:'Bitki'});
+    const LI=itemIn(room,'lights'); A.lights(g,LI.look,t); hs.push({id:'lights',slot:'lights',x:0,y:0,w:SW,h:22,label:'Işıklar'});
+    const CH=itemIn(room,'chair'); A.chair(g,22,132,CH.look,E.anim?t:0); hs.push({id:'chair',slot:'chair',x:18,y:126,w:44,h:58,label:'Sandalye'});
+    A.cat(g,30,152,ITEM[S.companion.itemId].look,t,E.anim); hs.push({id:'cat',x:28,y:148,w:26,h:12,label:S.companion.name});
+    const BT=itemIn(room,'btable'); A.btable(g,70,160,BT.look); hs.push({id:'btable',slot:'btable',x:66,y:156,w:32,h:32,label:'Masa'});
+    const PL=itemIn(room,'plant'); A.plant(g,120,152,PL.look); hs.push({id:'plant',slot:'plant',x:116,y:150,w:32,h:48,label:'Bitki'});
+    return hs;
+  }
+
+  function drawRoom(){
+    if(!S||!g) return;
+    if(UI.highlight&&Date.now()>UI.highlight.until) UI.highlight=null;
+    const t=time(), E=env();
+    g.clearRect(0,0,SW,SH);
+    const room=UI.room;
+    hotspots = room==='tv'?tvroom(t,E):room==='balcony'?balcony(t,E):reading(t,E);
+    if(UI.edit){
+      const now=Math.floor(t*2)%2;
+      for(const h of hotspots) if(h.slot){ g.strokeStyle=now?'rgba(242,183,102,.95)':'rgba(242,183,102,.55)'; g.setLineDash([2,2]); g.lineWidth=1; g.strokeRect(h.x+.5,h.y+.5,h.w-1,h.h-1); g.setLineDash([]); }
+    }
+    blit();
+  }
+  function blit(){
+    if(!view||!buf) return;
+    const rect=canvas.getBoundingClientRect(); const dpr=Math.min(3,window.devicePixelRatio||1);
+    const W=Math.max(1,Math.round(rect.width*dpr)), H=Math.max(1,Math.round(rect.width*SH/SW*dpr));
+    if(canvas.width!==W||canvas.height!==H){ canvas.width=W; canvas.height=H; }
+    view.imageSmoothingEnabled=false; view.clearRect(0,0,W,H); view.drawImage(buf,0,0,W,H);
+  }
+  function loop(ts){
+    if(!running) return;
+    raf=requestAnimationFrame(loop);
+    if(!visible) return;
+    if(ts-last<80) return; last=ts;
+    drawRoom();
+  }
+  function mount(el){
+    ensureBuf(); canvas=el; view=el.getContext('2d');
+    el.onclick=e=>{
+      const r=el.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*SW, y=(e.clientY-r.top)/r.height*SH;
+      // en üstteki (son çizilen) önce
+      const hit=[...hotspots].reverse().find(h=>x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h);
+      if(hit) onHotspot(hit);
+    };
+    drawRoom();
+    if(S.prefs.animations){ if(!running){ running=true; raf=requestAnimationFrame(loop);} } else stop();
+  }
+  function stop(){ running=false; cancelAnimationFrame(raf); }
+  function unmount(){ stop(); canvas=null; view=null; }
+  return {
+    mount, unmount, stop,
+    redraw(){ if(canvas) drawRoom(); },
+    pause(){ visible=false; }, resume(){ visible=true; if(canvas) drawRoom(); },
+    hotspots:()=>hotspots,
+    /* Mağaza/koleksiyon için küçük resim */
+    thumb(el,id){
+      const it=ITEM[id]; if(!it) return; const A=Art;
+      const box={sofa:[84,52],bookcase:[44,146],lamp:[22,54],rug:[74,26],plant:[26,46],table:[22,26],art:[34,28],view:[60,60],tv:[54,64],tapes:[66,34],tvseat:[38,34],music:[38,32],chair:[40,52],lights:[160,30],btable:[28,28],cat:[26,10]}[it.type]||[40,40];
+      el.width=box[0]; el.height=box[1]; const c=el.getContext('2d'); c.clearRect(0,0,el.width,el.height);
+      const saved=g; g=c; const t=2.2, E={weather:'rain',sky:'night',anim:false,floorY:box[1]};
+      try{
+        const L=it.look;
+        if(it.type==='sofa') A.sofa(c,2,1,L);
+        else if(it.type==='bookcase'){ const demo=Array.from({length:28},(_,i)=>({id:'d'+i,spine:{w:3+(i*7)%6,hClass:i%3,band:i%3,color:SPINE_COLORS[(i*5)%SPINE_COLORS.length]}})); A.bookcase(c,3,4,L,demo,t); }
+        else if(it.type==='lamp'){ const y={bulb:4,lantern:6,floor:0,lava:16}[L.kind]; A.lamp(c,2,y,L,t,true,{...E,floorY:54}); }
+        else if(it.type==='rug') A.rug(c,1,1,L);
+        else if(it.type==='plant'){ if(L.kind==='none'){ A.R(c,6,40,14,2,'rgba(255,240,220,.15)'); } else A.plant(c,1,1,L); }
+        else if(it.type==='table') A.table(c,1,1,L,null);
+        else if(it.type==='art') A.art(c,2,2,L,7);
+        else if(it.type==='view'){ A.view(c,0,0,60,60,L,t,E); }
+        else if(it.type==='tv') A.tv(c,1,23,L,t,null,false);
+        else if(it.type==='tapes') A.tapes(c,1,3,L,Array.from({length:12},(_,i)=>({id:'d'+i,color:SPINE_COLORS[(i*3)%SPINE_COLORS.length],series:i===4,count:3,watched:3})),t);
+        else if(it.type==='tvseat') A.tvseat(c,1,1,L);
+        else if(it.type==='music') A.music(c,1,1,L,t,false);
+        else if(it.type==='chair') A.chair(c,1,1,L,0);
+        else if(it.type==='lights'){ if(L.kind==='none') A.R(c,10,14,140,1,'rgba(255,240,220,.15)'); else A.lights(c,L,t); }
+        else if(it.type==='btable') A.btable(c,1,1,L);
+        else if(it.type==='cat') A.cat(c,3,1,L,0,false);
+      }finally{ g=saved; }
+    }
+  };
+})();
+
+/* ----- Sahne dokunuşları ----- */
+function onHotspot(h){
+  const room=UI.room;
+  if(UI.edit){
+    if(h.slot) openSheet('slot',{room,slot:h.slot});
+    else if(h.id==='cat') openSheet('companion');
+    return;
+  }
+  switch(h.id){
+    case 'bookcase': go('books'); break;
+    case 'tbr': go('books',{scrollTo:'#planned'}); break;
+    case 'table': { const rd=readingBooks()[0]; rd?openSheet('book',{id:rd.id}):toast('Okumaya başladığın kitap sehpada durur.'); break; }
+    case 'sofa': case 'tvseat': case 'chair': case 'plant': case 'plant2': case 'rug': case 'art': case 'btable': case 'bookcaseEdit':
+      openSheet('slot',{room,slot:h.slot}); break;
+    case 'lamp': S.rooms[room].lightOn=!S.rooms[room].lightOn; persist(); Scene.redraw(); toast(S.rooms[room].lightOn?'Lamba açıldı.':'Lamba kapandı.'); break;
+    case 'view': openSheet('weather'); break;
+    case 'lights': openSheet('slot',{room,slot:'lights'}); break;
+    case 'cat': toast(S.companion.name+' mırlıyor.'); break;
+    case 'tv': { const w=watchingNow(); w?openSheet('media',{id:w.id}):go('films'); break; }
+    case 'tapes': go('films'); break;
+    case 'planrack': go('films',{scrollTo:'#mplanned'}); break;
+    case 'posters': toast('İzlediğin bir yapımı favori yapınca afişi burada belirir.'); break;
+    case 'music': openSheet('sound'); break;
+  }
+}
+
+
+/* screens.js */
+'use strict';
+/* LumaRaf · ekranlar ve alttan açılan sayfalar. */
+
+const ICON={
+  home:'<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',
+  book:'<path d="M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M5 17a3 3 0 013-3h10"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  film:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="2"/><circle cx="15.5" cy="12" r="2"/><path d="M10.5 12h3"/>',
+  shop:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 016 0"/>',
+  gear:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  edit:'<path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/>',
+  grid:'<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
+  leaf:'<path d="M5 19c0-9 6-14 15-14 0 9-5 15-14 15"/><path d="M5 19l8-8"/>',
+  cloud:'<path d="M7 17h10a4 4 0 000-8 6 6 0 00-11 1 3.5 3.5 0 001 7z"/><path d="M9 20l-1 2M13 20l-1 2M17 20l-1 2"/>',
+  music:'<path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="16" r="2"/>',
+  close:'<path d="M6 6l12 12M18 6L6 18"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  arrow:'<path d="M9 5l7 7-7 7"/>',
+  door:'<path d="M5 20V5a1 1 0 011-1h12a1 1 0 011 1v15"/><path d="M3 20h18M15 12h.01"/>',
+  star:'<path d="M12 4l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.3 7 19l1.2-5.6L4 9.6 9.6 9z"/>',
+};
+const ic=(n,s=20)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+
+/* ---------------- Ana çizim ---------------- */
+function render(){
+  if(!S) return;
+  document.body.dataset.room = UI.tab==='home'?UI.room:(UI.tab==='films'?'tv':'reading');
+  renderHeader(); renderNav();
+  const v=$('#view');
+  Scene.unmount();
+  v.innerHTML = UI.tab==='books'?viewBooks():UI.tab==='films'?viewFilms():UI.tab==='shop'?viewShop():viewHome();
+  hydrate(v);
+}
+function hydrate(root){
+  for(const c of $$('canvas[data-thumb]',root)) Scene.thumb(c,c.dataset.thumb);
+  const sc=$('#scene',root); if(sc) Scene.mount(sc);
+}
+function renderHeader(){
+  $('#top').innerHTML=`
+    <div class="logo">luma.<small>RAF</small></div>
+    <div class="top-r">
+      <button class="coin" data-act="go" data-tab="shop" aria-label="Jeton: ${balance()}"><i class="coin-dot"></i><span id="coinv">${fmt(balance())}</span></button>
+      <button class="pet" data-act="companion" aria-label="Yol arkadaşı"><canvas data-thumb="${S.companion.itemId}"></canvas></button>
+      <button class="icon-btn" data-act="settings" aria-label="Ayarlar">${ic('gear')}</button>
+    </div>`;
+  hydrate($('#top'));
+}
+function renderNav(){
+  const tabs=[['home','Evim','home'],['books','Kitaplar','book'],['add','Ekle','plus'],['films','Filmler','film'],['shop','Mağaza','shop']];
+  $('#nav').innerHTML=tabs.map(([k,l,i])=>k==='add'
+    ?`<button class="nav-add" data-act="add" aria-label="Ekle"><span>${ic('plus',22)}</span><em>${l}</em></button>`
+    :`<button class="${UI.tab===k?'on':''}" data-act="go" data-tab="${k}">${ic(i)}<em>${l}</em></button>`).join('');
+}
+function bumpCoins(gained){
+  renderHeader(); const el=$('.coin'); if(!el) return;
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  if(gained>0){ const f=document.createElement('div'); f.className='coin-float'; f.textContent='+'+gained; el.appendChild(f); setTimeout(()=>f.remove(),1400); }
+}
+function dateLine(){ const d=new Date(); return d.getDate()+' '+TR_MONTHS_LONG[d.getMonth()]+' '+TR_DAYS[d.getDay()]; }
+
+/* ---------------- Evim ---------------- */
+function viewHome(){
+  const room=ROOMS[UI.room];
+  S.lastRoom=UI.room;
+  let cards='';
+  if(UI.room==='reading'){
+    const rd=readingBooks(), plan=plannedBooks().length, read=readBooks().length;
+    cards+=rd.map(r=>{const b=S.books[r.bookId];return `<div class="card row-card" data-act="book" data-id="${r.id}"><span class="mini-spine" style="background:${b.spineColor}"></span><div class="grow"><div class="eyebrow small">ŞU AN OKUYORUM</div><div class="serif">${esc(b.title)}</div><div class="muted">${esc(b.authors.join(', ')||'Yazar yok')}${b.pageCount?' · '+b.pageCount+' sayfa':''}</div></div><button class="btn sm" data-act="finish" data-id="${r.id}">Bitirdim</button></div>`;}).join('');
+    cards+=`<div class="stats"><div class="stat" data-act="go" data-tab="books"><b>${readThisYear()}</b><span>bu yıl</span></div><div class="stat" data-act="go" data-tab="books"><b>${read}</b><span>rafta</span></div><div class="stat" data-act="go" data-tab="books" data-scroll="#planned"><b>${plan}</b><span>okunacak</span></div></div>`;
+    if(!read&&!rd.length) cards+=`<div class="card hint"><div class="serif">Kitaplığın şimdilik boş.</div><p class="muted">Okuduğun bir kitabı ekle; sırtı soldaki rafa yerleşsin. Okumayı planladıkların yerdeki yığında durur.</p><button class="btn" data-act="add" data-kind="book">Kitap ekle</button></div>`;
+  } else if(UI.room==='tv'){
+    const w=watchingNow();
+    if(w){ const m=S.media[w.mediaId]; cards+=`<div class="card row-card" data-act="media" data-id="${w.id}"><span class="mini-tape" style="background:${m.spineColor}"></span><div class="grow"><div class="eyebrow small">ŞU AN İZLİYORUM</div><div class="serif">${esc(m.title)}</div><div class="muted">${m.kind==='series'?'Dizi · '+(w.seasonsWatched||[]).length+'/'+m.seasons+' sezon':'Film'}</div></div><button class="btn sm" data-act="watched" data-id="${w.id}">İzledim</button></div>`; }
+    cards+=`<div class="stats"><div class="stat" data-act="go" data-tab="films"><b>${watchedList().filter(w=>S.media[w.mediaId].kind==='movie').length}</b><span>film</span></div><div class="stat" data-act="go" data-tab="films"><b>${watchedList().filter(w=>S.media[w.mediaId].kind==='series').length}</b><span>dizi</span></div><div class="stat" data-act="go" data-tab="films" data-scroll="#mplanned"><b>${plannedMedia().filter(w=>w.status==='planned').length}</b><span>izlenecek</span></div></div>`;
+    if(!S.watch.length) cards+=`<div class="card hint"><div class="serif">Kaset rafın boş.</div><p class="muted">İzlediğin filmler TV ünitesindeki kutuya, izlemek istediklerin soldaki duvar rafına dizilir.</p><button class="btn" data-act="add" data-kind="media">Film ya da dizi ekle</button></div>`;
+  } else {
+    cards+=`<div class="card row-card" data-act="sound"><span class="round-ic">${ic('music')}</span><div class="grow"><div class="serif">Balkonda biraz dinlen</div><div class="muted">Yağmur ve kadife piyano · ses ayarı</div></div>${ic('arrow',18)}</div>`;
+  }
+  return `
+  <div class="eyebrow">${dateLine()}</div>
+  <div class="title-row"><h1>${room.name}</h1><button class="pill" data-act="rooms">${ic('door',18)}Odalar</button></div>
+  <div class="scene-card ${UI.edit?'editing':''}">
+    <canvas id="scene" aria-label="${room.name} sahnesi"></canvas>
+    ${UI.edit?`<div class="edit-banner">Değiştirmek istediğin eşyaya dokun <button data-act="edit">Bitti</button></div>`:''}
+  </div>
+  <div class="tools">
+    <button class="${UI.edit?'on':''}" data-act="edit">${ic('edit')}<span>Düzenle</span></button>
+    <button data-act="go" data-tab="shop">${ic('grid')}<span>Mağaza</span></button>
+    <button data-act="collection">${ic('leaf')}<span>Koleksiyon</span></button>
+    <button data-act="weather">${ic('cloud')}<span>Hava</span></button>
+  </div>
+  <div class="room-tabs">${ROOM_ORDER.map(k=>`<button class="${UI.room===k?'on':''}" data-act="room" data-room="${k}">${ROOMS[k].name}</button>`).join('')}</div>
+  ${cards}
+  <div class="foot-space"></div>`;
+}
+
+/* ---------------- Kitaplar ---------------- */
+function shelfRows(entries,maxW,unit=3,gap=2){
+  const rows=[[]]; let w=0;
+  for(const r of entries){ const sp=spineFor(S.books[r.bookId]); const bw=Math.max(14,sp.w*unit+4); if(w+bw>maxW&&rows[rows.length-1].length){ rows.push([]); w=0; } rows[rows.length-1].push({r,sp,bw}); w+=bw+gap; }
+  return rows;
+}
+function viewBooks(){
+  const read=readBooks(), rd=readingBooks(), plan=plannedBooks();
+  const maxW=Math.min(560,window.innerWidth)-32-20;
+  const rows=shelfRows(read,maxW);
+  while(rows.length<3) rows.push([]);
+  const shelf=`<div class="bigshelf">${rows.map(row=>`<div class="shelf-row">${row.map(({r,sp,bw})=>{const b=S.books[r.bookId];const h=[96,108,120][sp.hClass];
+      return `<button class="spine${UI.highlight&&UI.highlight.id===r.id?' glow':''}" data-act="book" data-id="${r.id}" style="width:${bw}px;height:${h}px;--c:${sp.color}" aria-label="${esc(b.title)}"><span class="band b${sp.band}"></span><span class="st">${esc(b.title)}</span></button>`;}).join('')}</div>`).join('')}</div>`;
+  const list=read.slice().reverse().map(r=>{const b=S.books[r.bookId];return `<button class="list-row" data-act="book" data-id="${r.id}"><span class="mini-spine" style="background:${b.spineColor}"></span><span class="grow"><b class="serif">${esc(b.title)}</b><small>${esc(b.authors.join(', ')||'—')} · ${shortDate(r.finishedAt)}</small></span>${r.rating?`<span class="stars">${'★'.repeat(r.rating)}</span>`:''}</button>`;}).join('');
+  const sorts=[['date','Tarih'],['author','Yazar'],['title','Ad'],['color','Renk']];
+  return `
+  <div class="eyebrow">OKUMA ODASI</div>
+  <div class="title-row"><h1>Kitaplığım</h1><button class="pill" data-act="add" data-kind="book">${ic('plus',18)}Kitap</button></div>
+  <div class="stats"><div class="stat"><b>${readThisYear()}</b><span>bu yıl</span></div><div class="stat"><b>${read.length}</b><span>rafta</span></div><div class="stat"><b>${plan.length}</b><span>okunacak</span></div></div>
+  <div class="seg-row"><div class="seg">${[['shelf','Raf'],['list','Liste']].map(([k,l])=>`<button class="${UI.booksView===k?'on':''}" data-act="booksView" data-v="${k}">${l}</button>`).join('')}</div>
+    <div class="chips">${sorts.map(([k,l])=>`<button class="chip ${S.prefs.shelfSort===k?'on':''}" data-act="sort" data-v="${k}">${l}</button>`).join('')}</div></div>
+  ${read.length?(UI.booksView==='shelf'?shelf:`<div class="list">${list}</div>`):`<div class="card hint"><div class="serif">Rafın seni bekliyor.</div><p class="muted">Okuduğun ilk kitabı ekle; sırtı sayfa sayısına göre kalın ya da ince olur.</p><button class="btn" data-act="add" data-kind="book">Okuduğum bir kitabı ekle</button></div>`}
+  ${rd.length?`<h2 class="sec">Okuyorum</h2><div class="list">${rd.map(r=>{const b=S.books[r.bookId];return `<div class="list-row"><span class="mini-spine" style="background:${b.spineColor}"></span><button class="grow plain" data-act="book" data-id="${r.id}"><b class="serif">${esc(b.title)}</b><small>${esc(b.authors.join(', ')||'—')} · ${shortDate(r.startedAt)} başladın</small></button><button class="btn sm" data-act="finish" data-id="${r.id}">Bitirdim</button></div>`;}).join('')}</div>`:''}
+  <h2 class="sec" id="planned">Okunacaklar <small>${plan.length}</small></h2>
+  ${plan.length?`<div class="tbr">${plan.map(r=>{const b=S.books[r.bookId];return `<div class="tbr-row"><span class="tbr-book" style="--c:${b.spineColor};width:${58+hash(b.title)%30}%"></span><button class="grow plain" data-act="book" data-id="${r.id}"><b class="serif">${esc(b.title)}</b><small>${esc(b.authors.join(', ')||'—')}</small></button><button class="btn sm ghost" data-act="startBook" data-id="${r.id}">Başladım</button></div>`;}).join('')}</div>`
+  :`<p class="muted pad">Okumayı planladığın kitaplar burada ve odanda yerde yığın olarak durur.</p>`}
+  <div class="foot-space"></div>`;
+}
+
+/* ---------------- Filmler ---------------- */
+function tapeRows(entries,maxW){
+  const rows=[[]]; let w=0;
+  for(const e of entries){ const m=S.media[e.mediaId]; const n=m.kind==='series'?m.seasons||1:1; const bw=n*18+(n>1?4:0); if(w+bw>maxW&&rows[rows.length-1].length){rows.push([]);w=0;} rows[rows.length-1].push(e); w+=bw+3; }
+  return rows;
+}
+function tapeHtml(e){
+  const m=S.media[e.mediaId]; const n=m.kind==='series'?m.seasons||1:1; const ws=e.seasonsWatched||[];
+  const one=(k)=>`<span class="tape${m.kind==='series'&&e.status==='watched'&&!ws.includes(k+1)?' faded':''}" style="--c:${m.spineColor}"><span class="lbl">${k===0?esc(m.title):'S'+(k+1)}</span></span>`;
+  return `<button class="tapeset${n>1?' box':''}${UI.highlight&&UI.highlight.id===e.id?' glow':''}" data-act="media" data-id="${e.id}" aria-label="${esc(m.title)}">${Array.from({length:n},(_,k)=>one(k)).join('')}</button>`;
+}
+function viewFilms(){
+  const watched=watchedList(), planned=plannedMedia();
+  const maxW=Math.min(560,window.innerWidth)-32-24;
+  const rack=(list,cls)=>{ const rows=tapeRows(list,maxW); return `<div class="rack ${cls}">${rows.map(r=>`<div class="rack-row">${r.map(tapeHtml).join('')}</div>`).join('')}</div>`; };
+  return `
+  <div class="eyebrow">TV ODASI</div>
+  <div class="title-row"><h1>İzlediklerim</h1><button class="pill" data-act="add" data-kind="media">${ic('plus',18)}Ekle</button></div>
+  <div class="stats"><div class="stat"><b>${watched.filter(w=>S.media[w.mediaId].kind==='movie').length}</b><span>film</span></div><div class="stat"><b>${watched.filter(w=>S.media[w.mediaId].kind==='series').length}</b><span>dizi</span></div><div class="stat"><b>${planned.filter(w=>w.status==='planned').length}</b><span>izlenecek</span></div></div>
+  ${watched.length?rack(watched,'wood'):`<div class="card hint"><div class="serif">Kaset kutun boş.</div><p class="muted">Her film bir kaset, her dizi sezon sayısı kadar kasetlik bir kutu set olur.</p><button class="btn" data-act="add" data-kind="media">İzlediğim bir şeyi ekle</button></div>`}
+  <h2 class="sec" id="mplanned">İzleyeceklerim <small>${planned.length}</small></h2>
+  ${planned.length?rack(planned,'teal'):`<p class="muted pad">İzlemek istediklerin TV odasındaki duvar rafında durur.</p>`}
+  ${planned.length?`<div class="list">${planned.map(e=>{const m=S.media[e.mediaId];return `<button class="list-row" data-act="media" data-id="${e.id}"><span class="mini-tape" style="background:${m.spineColor}"></span><span class="grow"><b class="serif">${esc(m.title)}</b><small>${m.kind==='series'?'Dizi':'Film'}${m.year?' · '+m.year:''}${e.status==='watching'?' · izliyorum':''}</small></span>${ic('arrow',16)}</button>`;}).join('')}</div>`:''}
+  <div class="foot-space"></div>`;
+}
+
+/* ---------------- Mağaza ---------------- */
+function shopItems(tab){
+  const def=SHOP_TABS.find(t=>t.key===tab)||SHOP_TABS[0];
+  if(!def.types) return CATALOG.filter(i=>i.price>0&&owns(i.id));
+  return CATALOG.filter(i=>def.types.includes(i.type)).sort((a,b)=>def.types.indexOf(a.type)-def.types.indexOf(b.type));
+}
+function itemStatus(it){
+  if(it.type==='cat') return S.companion.itemId===it.id?'Yanında':owns(it.id)?'Sahip':null;
+  const w=whereIs(it.id);
+  if(it.price===0) return 'Başlangıç';
+  if(w.length) return it.multi?w.map(x=>ROOMS[x.room].name).join(', '):ROOMS[w[0].room].name;
+  return owns(it.id)?'Sahip':null;
+}
+function viewShop(){
+  const items=shopItems(UI.shopTab), bal=balance();
+  return `
+  <div class="eyebrow">KÜÇÜK EŞYALAR DÜKKÂNI</div>
+  <div class="title-row"><h1>Mağaza</h1></div>
+  <div class="card balance"><span class="coin-dot big"></span><div class="grow"><b>${fmt(bal)} jeton</b><div class="muted">Yaklaşık ${Math.max(0,Math.floor(bal/ECONOMY.avgPerBook))} kitaplık okuma karşılığı</div></div></div>
+  <div class="chips scroll">${SHOP_TABS.map(t=>`<button class="chip ${UI.shopTab===t.key?'on':''}" data-act="shopTab" data-v="${t.key}">${t.label}</button>`).join('')}</div>
+  ${items.length?`<div class="grid">${items.map(it=>{const st=itemStatus(it);return `<button class="item-card" data-act="item" data-id="${it.id}"><div class="thumb ${it.type}"><canvas data-thumb="${it.id}"></canvas></div><small>${TYPE_LABEL[it.type]}</small><b>${esc(it.name)}</b>${st?`<span class="tag">${esc(st)}</span>`:`<span class="price ${bal<it.price?'short':''}"><i class="coin-dot"></i>${fmt(it.price)}</span>`}</button>`;}).join('')}</div>`
+  :`<p class="muted pad">Henüz bir şey satın almadın. Okudukça jeton biriktirip buraya dönebilirsin.</p>`}
+  <div class="foot-space"></div>`;
+}
+
+/* ================= Alttan açılan sayfalar ================= */
+const Sheets={};
+const sheetHead=(title,eyebrow='')=>`<div class="sheet-head"><div>${eyebrow?`<div class="eyebrow small">${eyebrow}</div>`:''}<h2>${title}</h2></div><button class="icon-btn" data-act="closeSheet" aria-label="Kapat">${ic('close')}</button></div>`;
+
+Sheets.rooms=()=>sheetHead('Evim')+`<div class="room-grid">${ROOM_ORDER.map(k=>{const thumb={reading:'sofa_terra',tv:'tv_crt',balcony:'chair_wicker'}[k];return `<button class="room-card ${UI.room===k?'on':''}" data-act="room" data-room="${k}"><div class="thumb"><canvas data-thumb="${S.rooms[k].slots[{reading:'sofa',tv:'tv',balcony:'chair'}[k]]||thumb}"></canvas></div><b>${ROOMS[k].name}</b><small>${ROOMS[k].hint}</small></button>`;}).join('')}<div class="room-card soon"><div class="thumb"></div><b>Yeni oda</b><small>İleride</small></div></div>`;
+
+Sheets.slot=({room,slot})=>{
+  const type=SLOT_TYPE[slot], cur=S.rooms[room].slots[slot];
+  const sel=UI.preview&&UI.preview.slot===slot?UI.preview.itemId:cur;
+  const items=CATALOG.filter(i=>i.type===type).sort((a,b)=>(owns(b.id)-owns(a.id))||(a.price-b.price));
+  const it=ITEM[sel], need=!owns(sel), bal=balance();
+  const elsewhere=!it.multi&&it.price>0?whereIs(sel).filter(w=>!(w.room===room&&w.slot===slot)):[];
+  let action;
+  if(sel===cur) action=`<button class="btn wide ghost" data-act="closeSheet">Kapat</button>`;
+  else if(need) action=bal>=it.price?`<button class="btn wide" data-act="buyPlace" data-id="${sel}" data-room="${room}" data-slot="${slot}">${fmt(it.price)} jetonla al ve yerleştir</button>`:`<button class="btn wide" disabled>${fmt(it.price-bal)} jeton eksik · ~${Math.ceil((it.price-bal)/ECONOMY.avgPerBook)} kitap</button>`;
+  else action=`<button class="btn wide" data-act="placeSel" data-id="${sel}" data-room="${room}" data-slot="${slot}">Buraya yerleştir</button>`;
+  return sheetHead(TYPE_LABEL[type],ROOMS[room].name.toLocaleUpperCase('tr-TR'))+
+   `<p class="muted">Seçtiğin eşya yukarıda önizlenir; onaylamadan hiçbir şey değişmez.</p>
+   <div class="pick-grid">${items.map(i=>{const o=owns(i.id);return `<button class="pick ${i.id===sel?'sel':''} ${o?'':'locked'}" data-act="preview" data-id="${i.id}" data-room="${room}" data-slot="${slot}"><div class="thumb ${i.type}"><canvas data-thumb="${i.id}"></canvas></div><b>${esc(i.name)}</b><small>${i.id===cur?'Burada':o?'Sahip':`<i class="coin-dot"></i>${fmt(i.price)}`}</small></button>`;}).join('')}</div>
+   ${elsewhere.length?`<p class="note">Bu eşya şu an ${ROOMS[elsewhere[0].room].name} odasında. Buraya taşınırsa oradaki yeri başlangıç eşyasına döner; ikinci kopya oluşmaz.</p>`:''}
+   <div class="sheet-actions">${action}</div>`;
+};
+
+Sheets.item=({id})=>{
+  const it=ITEM[id], o=owns(id), bal=balance();
+  let body='';
+  if(it.type==='cat'){
+    body = !o?(bal>=it.price?`<button class="btn wide" data-act="buy" data-id="${id}">${fmt(it.price)} jetonla al</button>`:`<button class="btn wide" disabled>${fmt(it.price-bal)} jeton eksik</button>`)
+      : S.companion.itemId===id?`<p class="muted">Şu an yanında.</p>`:`<button class="btn wide" data-act="setCat" data-id="${id}">Yol arkadaşım olsun</button>`;
+  } else if(!o){
+    body = bal>=it.price?`<button class="btn wide" data-act="buy" data-id="${id}">${fmt(it.price)} jetonla al</button>`:`<button class="btn wide" disabled>${fmt(it.price-bal)} jeton eksik · yaklaşık ${Math.ceil((it.price-bal)/ECONOMY.avgPerBook)} kitap</button>`;
+  } else {
+    const slots=slotsFor(it.type);
+    body = `<div class="eyebrow small">NEREYE YERLEŞTİRİLSİN?</div><div class="list">${slots.map(s=>{const here=S.rooms[s.room].slots[s.slot]===id;return `<div class="list-row"><span class="grow"><b>${ROOMS[s.room].name}</b><small>${TYPE_LABEL[SLOT_TYPE[s.slot]]} · şu an: ${esc(ITEM[S.rooms[s.room].slots[s.slot]].name)}</small></span>${here?'<span class="tag">Burada</span>':`<button class="btn sm" data-act="placeHere" data-id="${id}" data-room="${s.room}" data-slot="${s.slot}">Yerleştir</button>`}</div>`;}).join('')}</div>`;
+  }
+  return sheetHead(esc(it.name),TYPE_LABEL[it.type].toLocaleUpperCase('tr-TR'))+
+    `<div class="item-hero"><canvas data-thumb="${id}"></canvas></div>
+     <div class="center muted">${it.price?`<i class="coin-dot"></i> ${fmt(it.price)} jeton`:'Başlangıç eşyası'}${it.multi?' · birden fazla odada kullanılabilir':''}${it.id==='music_vinyl'?' · Plak çıtırtısı kanalına eşlik eder':''}</div>
+     <div class="sheet-actions col">${body}</div>`;
+};
+Sheets.collection=()=>{
+  const own=CATALOG.filter(i=>i.price>0&&owns(i.id));
+  return sheetHead('Koleksiyon','SAHİP OLDUKLARIN')+(own.length?`<div class="pick-grid">${own.map(i=>`<button class="pick" data-act="item" data-id="${i.id}"><div class="thumb ${i.type}"><canvas data-thumb="${i.id}"></canvas></div><b>${esc(i.name)}</b><small>${esc(itemStatus(i)||'Sahip')}</small></button>`).join('')}</div>`:`<p class="muted">Henüz satın aldığın bir eşya yok. Başlangıç eşyaları her odada hazır.</p><div class="sheet-actions"><button class="btn wide" data-act="go" data-tab="shop">Mağazaya git</button></div>`);
+};
+
+/* ----- Ekle ----- */
+UI.form=null;
+function freshForm(kind){ return kind==='media'?{kind:'media',title:'',mkind:'movie',year:'',seasons:'1',status:'watched'}:{kind:'book',title:'',author:'',pages:'',status:'read',color:''}; }
+Sheets.add=({kind})=>{
+  if(!UI.form||UI.form.kind!==(kind||UI.form.kind)) UI.form=freshForm(kind||'book');
+  const f=UI.form;
+  const seg=(name,opts)=>`<div class="seg full">${opts.map(([v,l])=>`<button class="${f[name]===v?'on':''}" data-act="formSet" data-k="${name}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  const head=sheetHead(f.kind==='book'?'Ne okudun?':'Ne izledin?','YENİ KAYIT')+
+    `<div class="seg full kind">${[['book','Kitap'],['media','Film / dizi']].map(([v,l])=>`<button class="${f.kind===v?'on':''}" data-act="formKind" data-v="${v}">${l}</button>`).join('')}</div>`;
+  if(f.kind==='book') return head+`
+    <label class="field"><span>Kitabın adı</span><input data-input="formIn" data-k="title" value="${esc(f.title)}" placeholder="Kürk Mantolu Madonna" autocomplete="off" maxlength="140"></label>
+    <label class="field"><span>Yazar</span><input data-input="formIn" data-k="author" value="${esc(f.author)}" placeholder="Sabahattin Ali" autocomplete="off" maxlength="100"></label>
+    <label class="field"><span>Sayfa sayısı <em>sırtın kalınlığını belirler</em></span><input data-input="formIn" data-k="pages" value="${esc(f.pages)}" inputmode="numeric" placeholder="160" maxlength="5"></label>
+    <div class="field"><span>Durum</span>${seg('status',[['read','Okudum'],['reading','Okuyorum'],['planned','Okuyacağım']])}</div>
+    <div class="field"><span>Sırt rengi</span><div class="swatches"><button class="sw auto ${!f.color?'on':''}" data-act="formSet" data-k="color" data-v="">oto</button>${SPINE_COLORS.map(c=>`<button class="sw ${f.color===c?'on':''}" style="--c:${c}" data-act="formSet" data-k="color" data-v="${c}" aria-label="${c}"></button>`).join('')}</div></div>
+    <div class="sheet-actions"><button class="btn wide" data-act="submitAdd">${f.status==='read'?'Devam et':'Ekle'}</button></div>`;
+  return head+`
+    <label class="field"><span>Adı</span><input data-input="formIn" data-k="title" value="${esc(f.title)}" placeholder="Babam ve Oğlum" autocomplete="off" maxlength="140"></label>
+    <div class="field"><span>Tür</span>${seg('mkind',[['movie','Film'],['series','Dizi']])}</div>
+    <div class="two">
+      <label class="field"><span>Yıl</span><input data-input="formIn" data-k="year" value="${esc(f.year)}" inputmode="numeric" placeholder="2005" maxlength="4"></label>
+      ${f.mkind==='series'?`<label class="field"><span>Sezon sayısı</span><input data-input="formIn" data-k="seasons" value="${esc(f.seasons)}" inputmode="numeric" maxlength="2"></label>`:'<div></div>'}
+    </div>
+    <div class="field"><span>Durum</span>${seg('status',[['watched','İzledim'],['watching','İzliyorum'],['planned','İzleyeceğim']])}</div>
+    <div class="sheet-actions"><button class="btn wide" data-act="submitAdd">Ekle</button></div>`;
+};
+
+/* ----- Okudum → rafa (doğrulama yeri) ----- */
+Sheets.finish=({id})=>{
+  const r=S.reading.find(x=>x.id===id); if(!r) return sheetHead('Bulunamadı');
+  const b=S.books[r.bookId], sp=spineFor(b), base=ECONOMY.interimRewards?ECONOMY.readBase:0, pb=ECONOMY.interimRewards?pageBonus(b.pageCount):0;
+  const already=hasRef('book:'+b.id+':read_base');
+  return sheetHead('Rafına yerleştir','OKUDUM')+`
+    <div class="finish-hero"><span class="big-spine" style="--c:${sp.color};width:${sp.w*5+10}px"></span><div><div class="serif lg">${esc(b.title)}</div><div class="muted">${esc(b.authors.join(', ')||'Yazar yok')}${b.pageCount?' · '+b.pageCount+' sayfa':''}</div></div></div>
+    <div class="card verify"><div class="eyebrow small">DOĞRULAMA · YAKINDA</div><p>Yapay zekâ ile <b>özet</b> ya da <b>10 soruluk test</b> adımı bu sürümde henüz bağlı değil. Şimdilik okuduğunu kendin onaylıyorsun; doğrulama eklendiğinde bu ekran o adıma dönüşecek.</p></div>
+    ${already?'<p class="note">Bu kitap için ödül daha önce alındı; yeniden ödül verilmez.</p>':`<div class="reward"><div><span>Okuma ödülü</span><b>+${base}</b></div><div><span>Sayfa bonusu${b.pageCount?' ('+b.pageCount+' s.)':''}</span><b>+${pb}</b></div><div class="tot"><span>Toplam</span><b>+${base+pb} jeton</b></div></div>`}
+    <div class="sheet-actions col"><button class="btn wide" data-act="confirmFinish" data-id="${id}">Rafıma koy</button><button class="btn wide ghost" data-act="closeSheet">Şimdi değil</button></div>`;
+};
+
+/* ----- Kitap kartı ----- */
+Sheets.book=({id})=>{
+  const r=S.reading.find(x=>x.id===id); if(!r) return sheetHead('Kitap bulunamadı');
+  const b=S.books[r.bookId], sp=spineFor(b);
+  const status={planned:'Okunacak',reading:'Okuyorum',read:'Rafta'}[r.status];
+  const acts=r.status==='planned'?`<button class="btn wide" data-act="startBook" data-id="${id}">Okumaya başladım</button><button class="btn wide ghost" data-act="finish" data-id="${id}">Okudum, rafa koy</button>`
+    :r.status==='reading'?`<button class="btn wide" data-act="finish" data-id="${id}">Bitirdim, rafa koy</button><button class="btn wide ghost" data-act="planBook" data-id="${id}">Okunacaklara geri al</button>`
+    :`<div class="rate">${[1,2,3,4,5].map(n=>`<button class="${(r.rating||0)>=n?'on':''}" data-act="rate" data-id="${id}" data-v="${n}" aria-label="${n} yıldız">${ic('star',26)}</button>`).join('')}</div>`;
+  return sheetHead(esc(b.title),status.toLocaleUpperCase('tr-TR'))+`
+    <div class="finish-hero"><span class="big-spine" style="--c:${sp.color};width:${sp.w*5+10}px"></span><div><div class="muted">${esc(b.authors.join(', ')||'Yazar yok')}</div><div class="muted">${b.pageCount?b.pageCount+' sayfa':'Sayfa sayısı yok'}</div>
+    <div class="muted">${r.finishedAt?'Bitirdin: '+shortDate(r.finishedAt):r.startedAt?'Başladın: '+shortDate(r.startedAt):'Eklendi: '+shortDate(r.addedAt)}</div>
+    ${r.verification?`<div class="tag">${r.verification.method==='interim'?'Kendi onayın':'Doğrulandı'}</div>`:''}</div></div>
+    <div class="sheet-actions col">${acts}
+      ${UI.confirmDel===id?`<button class="btn wide danger" data-act="delBook" data-id="${id}">Evet, sil</button><p class="note">Kazandığın jetonlar silinmez; kitap yeniden eklenirse ödül tekrar verilmez.</p>`:`<button class="btn wide text" data-act="askDel" data-id="${id}">Kitabı sil</button>`}
+    </div>`;
+};
+
+/* ----- Film / dizi kartı ----- */
+Sheets.media=({id})=>{
+  const e=S.watch.find(x=>x.id===id); if(!e) return sheetHead('Kayıt bulunamadı');
+  const m=S.media[e.mediaId];
+  const label={planned:'İzlenecek',watching:'İzliyorum',watched:'Rafta'}[e.status];
+  const seasons=m.kind==='series'?`<div class="field"><span>İzlenen sezonlar</span><div class="season-row">${Array.from({length:m.seasons},(_,k)=>`<button class="${(e.seasonsWatched||[]).includes(k+1)?'on':''}" data-act="season" data-id="${id}" data-v="${k+1}" style="--c:${m.spineColor}">${k+1}</button>`).join('')}</div></div>`:'';
+  const acts=[
+    e.status!=='watched'?`<button class="btn wide" data-act="watched" data-id="${id}">İzledim, rafa koy</button>`:'',
+    e.status==='planned'?`<button class="btn wide ghost" data-act="watching" data-id="${id}">Şimdi izliyorum</button>`:'',
+    e.status==='watched'?`<button class="btn wide ${e.favorite?'':'ghost'}" data-act="fav" data-id="${id}">${e.favorite?'Afiş duvarında':'Afiş duvarına as'}</button>`:'',
+    e.status!=='planned'?`<button class="btn wide ghost" data-act="mplan" data-id="${id}">İzleyeceklerime al</button>`:'',
+  ].join('');
+  return sheetHead(esc(m.title),label.toLocaleUpperCase('tr-TR'))+`
+    <div class="finish-hero"><span class="big-tape" style="--c:${m.spineColor}"></span><div><div class="muted">${m.kind==='series'?'Dizi · '+m.seasons+' sezon':'Film'}${m.year?' · '+m.year:''}</div><div class="muted">${e.watchedAt?'İzledin: '+shortDate(e.watchedAt):'Eklendi: '+shortDate(e.addedAt)}</div></div></div>
+    ${seasons}
+    <div class="sheet-actions col">${acts}
+    ${UI.confirmDel===id?`<button class="btn wide danger" data-act="delMedia" data-id="${id}">Evet, sil</button>`:`<button class="btn wide text" data-act="askDel" data-id="${id}">Kaydı sil</button>`}</div>`;
+};
+
+/* ----- Hava, ses, ayarlar, arkadaş, hoş geldin ----- */
+Sheets.weather=()=>{
+  const p=S.prefs;
+  const seg=(k,opts)=>`<div class="seg full">${opts.map(([v,l])=>`<button class="${String(p[k])===v?'on':''}" data-act="pref" data-k="${k}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  return sheetHead('Hava','BÜTÜN PENCERELER')+`
+    <div class="field"><span>Hava</span>${seg('weather',[['rain','Yağmur'],['snow','Kar'],['clear','Açık']])}</div>
+    <div class="field"><span>Gökyüzü</span>${seg('sky',[['night','Gece'],['dusk','Alacakaranlık']])}</div>
+    <div class="field"><span>Hareket</span>${seg('animations',[[true,'Açık'],[false,'Kapalı']].map(([v,l])=>[String(v),l]))}</div>
+    <p class="muted">Manzaranın kendisi mağazadan değişir; hava ücretsizdir.</p>`;
+};
+Sheets.sound=()=>{
+  const room=UI.tab==='home'?UI.room:S.lastRoom, mix=S.rooms[room].mix;
+  return sheetHead('Ses alanım',ROOMS[room].name.toLocaleUpperCase('tr-TR'))+`
+    <button class="toggle-row" data-act="soundToggle"><span><b>${S.prefs.soundOn?'Çalıyor':'Sessiz'}</b><small>${Native.available()?'Her odanın kendi karışımı vardır':'Tarayıcı önizlemesinde ses çalmaz; telefonda çalar'}</small></span><i class="switch ${S.prefs.soundOn?'on':''}"></i></button>
+    ${CHANNELS.map(c=>`<label class="slider"><span><b>${c.label}</b><small>${c.note}</small></span><input type="range" min="0" max="100" step="5" value="${mix[c.key]||0}" data-input="mix" data-k="${c.key}" data-room="${room}"><em>${mix[c.key]||0}%</em></label>`).join('')}
+    <div class="field"><span>Piyano</span><div class="chips wrap">${PIANOS.map(p=>`<button class="chip ${mix.piano===p.key?'on':''}" data-act="piano" data-v="${p.key}" data-room="${room}">${p.label}</button>`).join('')}</div></div>
+    <label class="slider"><span><b>${(PIANOS.find(p=>p.key===mix.piano)||PIANOS[0]).label}</b><small>${(PIANOS.find(p=>p.key===mix.piano)||PIANOS[0]).note}</small></span><input type="range" min="0" max="100" step="5" value="${mix.pianoVol||0}" data-input="mix" data-k="pianoVol" data-room="${room}"><em>${mix.pianoVol||0}%</em></label>`;
+};
+Sheets.settings=()=>sheetHead('Ayarlar')+`
+  <div class="list">
+    <button class="list-row" data-act="sound"><span class="grow"><b>Ses alanım</b><small>Yağmur, şömine, plak, piyano</small></span>${ic('arrow',16)}</button>
+    <button class="list-row" data-act="weather"><span class="grow"><b>Hava ve hareket</b><small>Yağmur, kar, gece</small></span>${ic('arrow',16)}</button>
+    <button class="list-row" data-act="companion"><span class="grow"><b>Yol arkadaşım</b><small>${esc(S.companion.name)} · ${esc(ITEM[S.companion.itemId].name)}</small></span>${ic('arrow',16)}</button>
+  </div>
+  <div class="card about"><div class="eyebrow small">HAKKINDA</div>
+    <p><b>LumaRaf</b> · ${esc(BUILD)}</p>
+    <p class="muted">LumaNote 0.5.7 kabuğu üzerine kuruldu. Bütün kayıtların bu telefonda, yerel bir dosyada tutulur; hesap ve sunucu yoktur.</p>
+    <p class="muted">Yapay zekâ doğrulaması (özet ve test) henüz bağlı değil. Bu sürümde "Okudum" demek kitabı rafa koyar ve geçici olarak ödül verir.</p>
+    <p class="muted small">Sesler: yağmur, şömine ve kadife piyano CC0 kayıtlarıdır (Freesound: DBlover, BonnyOrbit, blankie.rest). Gece Notları, Camdaki Damlalar, yumuşak gürültü ve plak çıtırtısı özgün sentezdir.</p>
+  </div>`;
+Sheets.companion=()=>{
+  const cats=CATALOG.filter(i=>i.type==='cat');
+  return sheetHead('Yol arkadaşım')+`
+    <label class="field"><span>Adı</span><input data-input="catName" value="${esc(S.companion.name)}" maxlength="24"></label>
+    <div class="pick-grid">${cats.map(i=>`<button class="pick ${S.companion.itemId===i.id?'sel':''} ${owns(i.id)?'':'locked'}" data-act="${owns(i.id)?'setCat':'item'}" data-id="${i.id}"><div class="thumb cat"><canvas data-thumb="${i.id}"></canvas></div><b>${esc(i.name)}</b><small>${S.companion.itemId===i.id?'Yanında':owns(i.id)?'Sahip':`<i class="coin-dot"></i>${fmt(i.price)}`}</small></button>`).join('')}</div>`;
+};
+Sheets.welcome=()=>`<div class="welcome">
+  <div class="eyebrow small">HOŞ GELDİN</div><h2 class="serif xl">Okudukça<br><em>dolan raflar.</em></h2>
+  <ol><li><b>Bu senin evin.</b> Okuma odası, TV odası ve balkon. Üstteki “Odalar” ile gezersin.</li>
+  <li><b>Okuduğun kitabı ekle.</b> Sırtı soldaki rafa yerleşir; okumayı planladıkların yerde yığın olur.</li>
+  <li><b>Jetonla döşe.</b> Koltuğa dokun, değiştir. Lamba, bitki, manzara mağazada.</li></ol>
+  <div class="reward"><div class="tot"><span>Taşınma hediyesi</span><b>+${ECONOMY.welcome} jeton</b></div></div>
+  <div class="sheet-actions"><button class="btn wide" data-act="closeWelcome">Evime gir</button></div></div>`;
+
+/* ================= Eylemler ================= */
+function syncAudio(){
+  if(!S) return;
+  const room=UI.tab==='home'?UI.room:S.lastRoom, mix=S.rooms[room].mix, volumes={};
+  for(const c of CHANNELS) volumes[c.key]=Number(mix[c.key])||0;
+  if(mix.piano) volumes[mix.piano]=Number(mix.pianoVol)||0;
+  Native.call('audio',{playing:!!S.prefs.soundOn,volumes}).catch(()=>{});
+}
+function safe(fn){ try{ return fn(); }catch(e){ toast(e.message||'İşlem tamamlanamadı.','warn'); return undefined; } }
+
+Object.assign(Actions,{
+  room:d=>{ UI.room=d.room; S.lastRoom=d.room; persist(); if(UI.tab!=='home') UI.tab='home'; if(UI.sheet) closeSheet(); render(); syncAudio(); },
+  rooms:()=>openSheet('rooms'),
+  edit:()=>{ UI.edit=!UI.edit; UI.preview=null; render(); if(UI.edit) toast('Kesikli çizgili eşyalara dokun.'); },
+  collection:()=>openSheet('collection'),
+  weather:()=>openSheet('weather'),
+  sound:()=>openSheet('sound'),
+  settings:()=>openSheet('settings'),
+  companion:()=>openSheet('companion'),
+  add:d=>{ UI.form=freshForm(d.kind||'book'); openSheet('add',{kind:d.kind||'book'}); },
+  formKind:d=>{ UI.form=freshForm(d.v); if(UI.sheet) UI.sheet.args.kind=d.v; renderSheet(); },
+  formSet:d=>{ UI.form[d.k]=d.v; renderSheet(); },
+  formIn:(d,el)=>{ UI.form[d.k]=el.value; },
+  submitAdd:()=>safe(()=>{
+    const f=UI.form;
+    if(f.kind==='book'){
+      const pages=String(f.pages||'').replace(/\D/g,'');
+      const {entry,existed}=addBook({title:f.title,author:f.author,pages,status:f.status==='read'?'planned':f.status,color:f.color});
+      persistNow(); UI.form=null;
+      if(f.status==='read'){ openSheet('finish',{id:entry.id}); return; }
+      closeSheet(); toast(existed?'Bu kitap zaten listende.':f.status==='reading'?'Sehpana koydum. İyi okumalar.':'Okunacaklar yığınına eklendi.');
+      UI.room='reading'; go('home',{room:'reading'});
+    } else {
+      const entry=addMedia({title:f.title,kind:f.mkind,year:String(f.year||'').replace(/\D/g,''),seasons:f.seasons,status:f.status});
+      persistNow(); UI.form=null; closeSheet();
+      UI.highlight={kind:'media',id:entry.id,until:Date.now()+5000};
+      toast(entry.status==='watched'?'Kaset rafına yerleşti.':entry.status==='watching'?'Televizyonda açık.':'İzleyeceklerine eklendi.');
+      go('home',{room:'tv'}); syncAudio();
+    }
+  }),
+  finish:d=>openSheet('finish',{id:d.id}),
+  confirmFinish:d=>safe(()=>{
+    const r=S.reading.find(x=>x.id===d.id); if(!r) return;
+    const gained=finishBook(r); persistNow();
+    closeSheet(); UI.highlight={kind:'book',id:r.id,until:Date.now()+6000};
+    go('home',{room:'reading'}); bumpCoins(gained); syncAudio();
+    toast(gained?`+${gained} jeton · kitabın rafına yerleşti.`:'Kitabın rafına yerleşti.');
+  }),
+  book:d=>{ UI.confirmDel=null; openSheet('book',{id:d.id}); },
+  startBook:d=>{ const r=S.reading.find(x=>x.id===d.id); if(!r) return; startReading(r); persist(); if(UI.sheet) closeSheet(); render(); toast('Sehpana koydum. İyi okumalar.'); },
+  planBook:d=>{ const r=S.reading.find(x=>x.id===d.id); if(!r) return; planAgain(r); persist(); closeSheet(); render(); },
+  rate:d=>{ const r=S.reading.find(x=>x.id===d.id); if(!r) return; r.rating=Number(d.v)===r.rating?0:Number(d.v); persist(); renderSheet(); if(UI.tab==='books') render(); },
+  askDel:d=>{ UI.confirmDel=d.id; renderSheet(); },
+  delBook:d=>{ const r=S.reading.find(x=>x.id===d.id); if(!r) return; removeBook(r); persistNow(); UI.confirmDel=null; closeSheet(); render(); toast('Kitap silindi.'); },
+  booksView:d=>{ UI.booksView=d.v; render(); },
+  sort:d=>{ S.prefs.shelfSort=d.v; persist(); render(); },
+  media:d=>{ UI.confirmDel=null; openSheet('media',{id:d.id}); },
+  watched:d=>{ const e=S.watch.find(x=>x.id===d.id); if(!e) return; setWatch(e,'watched'); persistNow(); if(UI.sheet) closeSheet(); UI.highlight={kind:'media',id:e.id,until:Date.now()+5000}; go('home',{room:'tv'}); toast('Kaset rafına yerleşti.'); },
+  watching:d=>{ const e=S.watch.find(x=>x.id===d.id); if(!e) return; setWatch(e,'watching'); persist(); closeSheet(); go('home',{room:'tv'}); toast('Televizyonda açık.'); },
+  mplan:d=>{ const e=S.watch.find(x=>x.id===d.id); if(!e) return; setWatch(e,'planned'); e.favorite=false; persist(); closeSheet(); render(); },
+  fav:d=>{ const e=S.watch.find(x=>x.id===d.id); if(!e) return; if(!e.favorite&&S.watch.filter(w=>w.favorite).length>=2) S.watch.find(w=>w.favorite).favorite=false; e.favorite=!e.favorite; persist(); renderSheet(); Scene.redraw(); },
+  season:d=>{ const e=S.watch.find(x=>x.id===d.id); if(!e) return; const n=Number(d.v); const set=new Set(e.seasonsWatched||[]); set.has(n)?set.delete(n):set.add(n); e.seasonsWatched=[...set].sort((a,b)=>a-b); persist(); renderSheet(); Scene.redraw(); },
+  delMedia:d=>{ const e=S.watch.find(x=>x.id===d.id); if(!e) return; removeMedia(e); persistNow(); UI.confirmDel=null; closeSheet(); render(); toast('Kayıt silindi.'); },
+  shopTab:d=>{ UI.shopTab=d.v; render(); },
+  item:d=>openSheet('item',{id:d.id}),
+  buy:d=>safe(()=>{ const it=ITEM[d.id]; if(buy(d.id)){ persistNow(); bumpCoins(0); toast(it.name+' senin.'); if(UI.tab==='shop') render(); renderSheet(); } }),
+  placeHere:d=>safe(()=>{ place(d.id,d.room,d.slot); persistNow(); closeSheet(); go('home',{room:d.room}); toast(ITEM[d.id].name+' yerleşti.'); }),
+  preview:d=>{ UI.preview={room:d.room,slot:d.slot,itemId:d.id}; Scene.redraw(); renderSheet(); },
+  placeSel:d=>safe(()=>{ place(d.id,d.room,d.slot); UI.preview=null; persistNow(); closeSheet(); Scene.redraw(); toast(ITEM[d.id].name+' yerleşti.'); }),
+  buyPlace:d=>safe(()=>{ buy(d.id); place(d.id,d.room,d.slot); UI.preview=null; persistNow(); closeSheet(); render(); bumpCoins(0); toast(ITEM[d.id].name+' senin. Odana yerleşti.'); }),
+  setCat:d=>safe(()=>{ setCompanion(d.id); persist(); renderHeader(); renderSheet(); Scene.redraw(); }),
+  catName:(d,el)=>{ S.companion.name=el.value.slice(0,24)||'Mırnav'; persist(); },
+  pref:d=>{ const v=d.v==='true'?true:d.v==='false'?false:d.v; S.prefs[d.k]=v; persist(); renderSheet(); if(d.k==='animations') render(); else Scene.redraw(); },
+  soundToggle:()=>{ S.prefs.soundOn=!S.prefs.soundOn; persist(); renderSheet(); syncAudio(); },
+  mix:(d,el)=>{ S.rooms[d.room].mix[d.k]=Number(el.value); const em=el.parentElement.querySelector('em'); if(em) em.textContent=el.value+'%'; persist(); clearTimeout(Actions._mixT); Actions._mixT=setTimeout(syncAudio,150); },
+  piano:d=>{ S.rooms[d.room].mix.piano=d.v; if(!S.rooms[d.room].mix.pianoVol) S.rooms[d.room].mix.pianoVol=25; persist(); renderSheet(); syncAudio(); },
+  closeWelcome:()=>{ S.prefs.intro=true; persistNow(); closeSheet(); },
+});
+
+
+/* browser.js */
+'use strict';
+/* Tarayıcı önizlemesi (ONIZLEME.html): telefon köprüsü yoksa kayıt localStorage'a yazılır, ses çalmaz.
+   Telefonda (Expo Go) bu dosya hiçbir şey yapmaz. */
+if(!window.ReactNativeWebView){
+  const KEY='lumaraf-onizleme-v1';
+  window.PreviewNative={
+    async call(type,payload){
+      if(type==='load'){ try{ const v=localStorage.getItem(KEY); return v?JSON.parse(v):null; }catch{ return null; } }
+      if(type==='save'){ try{ localStorage.setItem(KEY,JSON.stringify(payload.state)); }catch{} return true; }
+      return true;
+    }
+  };
+}
+
+
+/* main.js */
+'use strict';
+/* Açılış: kaydı yükle → normalize → çiz. */
+(async function boot(){
+  try{
+    const saved=await Native.call('load');
+    if(saved){ S=normalize(saved); }
+    else { S=freshState(); await persistNow(); }
+  }catch(e){
+    // Kayıt okunamadıysa üzerine yazmayız (R-VER): yalnızca uyarı gösteririz.
+    document.getElementById('view').innerHTML='<div class="card hint" style="margin-top:40px"><div class="serif">Kayıt okunamadı.</div><p class="muted">'+esc(e.message)+'</p><p class="muted">Dosyaların silinmedi. Uygulamayı kapatıp yeniden aç; sorun sürerse bu mesajı paylaş.</p></div>';
+    return;
+  }
+  UI.room=S.lastRoom||'reading';
+  render();
+  Native.call('ready').catch(()=>{});
+  syncAudio();
+  if(!S.prefs.intro) setTimeout(()=>openSheet('welcome'),350);
+  window.addEventListener('resize',()=>{ if(UI.tab!=='home') render(); else Scene.redraw(); });
+})();
+</script>
+</body>
+</html>

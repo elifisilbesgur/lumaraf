@@ -1,0 +1,58 @@
+{
+  "rain": {
+    "title": "Rain on concrete sound",
+    "author": "DBlover",
+    "page": "https://freesound.org/people/DBlover/sounds/412424/",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "kind": "recording",
+    "via": "LumaNote 0.5.7 assets/recordings"
+  },
+  "fire": {
+    "title": "Fireplace.wav",
+    "author": "BonnyOrbit",
+    "page": "https://freesound.org/people/BonnyOrbit/sounds/484337/",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "kind": "recording",
+    "via": "LumaNote 0.5.7 assets/cc0"
+  },
+  "brown": {
+    "title": "Yumuşak gürültü",
+    "author": "LumaNote",
+    "license": "Original project-generated synthesis; no third-party samples",
+    "kind": "synth",
+    "via": "LumaNote 0.5.7 assets/nocturne"
+  },
+  "vinyl": {
+    "title": "Plak çıtırtısı",
+    "author": "LumaRaf",
+    "license": "Original LumaRaf procedural audio; no third-party samples",
+    "kind": "procedural",
+    "generator": "tools/gen/generate-vinyl.py",
+    "seed": 57057
+  },
+  "pianoMoon": {
+    "title": "Gece Notları",
+    "author": "LumaNote",
+    "license": "Original LumaNote composition and synthesis; no third-party samples",
+    "kind": "procedural",
+    "via": "LumaNote 0.5.7 assets/atelier"
+  },
+  "pianoGlass": {
+    "title": "Camdaki Damlalar",
+    "author": "LumaNote",
+    "license": "Original LumaNote composition and synthesis; no third-party samples",
+    "kind": "procedural",
+    "via": "LumaNote 0.5.7 assets/atelier/pianoSakura.mp3"
+  },
+  "pianoVelvet": {
+    "title": "Sleepy Upright Piano Seamless Loop",
+    "author": "blankie.rest",
+    "page": "https://freesound.org/people/blankie.rest/sounds/859607/",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "kind": "recording",
+    "via": "LumaNote 0.5.7 assets/cc0/pianoDawn.mp3"
+  }
+}

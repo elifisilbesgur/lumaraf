@@ -1,0 +1,6 @@
+LumaRaf 0.1.0 — İlk odalar (Expo SDK 57)
+
+Ayrı bir Expo projesidir; LumaNote klasörünü değiştirmez.
+Başlatmak için: bash "$HOME/Desktop/LumaRaf/BASLAT.command"
+Port 8099. Ayrıntılar README_TR.md içinde.
+Yapay zekâ doğrulaması henüz bağlı değil; "Okudum" şimdilik kendi onayındır.

@@ -1,0 +1,12 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "App.tsx",
+    "raf/**/*.ts",
+    "raf/**/*.tsx"
+  ]
+}
